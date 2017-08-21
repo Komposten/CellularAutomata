@@ -7,8 +7,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.Disposable;
 
 import komposten.automata.Automata;
-import komposten.automata.PixPredatorPrey;
-import komposten.automata.PredatorPrey;
 import komposten.automata.predatorprey.PixPredatorPrey;
 import komposten.automata.predatorprey.PredatorPrey;
 
