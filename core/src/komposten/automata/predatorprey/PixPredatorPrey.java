@@ -25,6 +25,8 @@ public class PixPredatorPrey extends Automaton
 	private Organism[] organisms;
 	private RandomXS128 random;
 	
+	private int predators;
+	private int prey;
 	
 	
 	public PixPredatorPrey(int width, int height, OrthographicCamera orthographicCamera)
@@ -76,6 +78,9 @@ public class PixPredatorPrey extends Automaton
 	@Override
 	public void update()
 	{
+		predators = 0;
+		prey = 0;
+		
 		for (int r = 0; r < mesh.getRowCount(); r++)
 		{
 			for (int c = 0; c < mesh.getColumnCount(); c++)
@@ -95,9 +100,11 @@ public class PixPredatorPrey extends Automaton
 				switch (organism.getType())
 				{
 					case Predator :
+						predators++;
 						updatePredator(organism, neighbour);
 						break;
 					case Prey :
+						prey++;
 						updatePrey(organism, neighbour);
 						break;
 					case Nothing :
@@ -177,6 +184,8 @@ public class PixPredatorPrey extends Automaton
 	@Override
 	public void renderText(BitmapFont font, SpriteBatch batch)
 	{
+		font.draw(batch, "Predators: " + predators, 10, 20);
+		font.draw(batch, "Prey: " + prey, 10, 40);
 	}
 
 
