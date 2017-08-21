@@ -1,0 +1,17 @@
+================
+** 2017-08-21 **
+================
+- Created the abstract Automata class.
+- Added GridMesh (similar to IndexGridMesh, but uses only vertices and no indices).
+- Added PixPredatoryPrey.
+- Added input handling to toggle debug info.
+- Added input handling to change between available automata.
+- Moved PredatorPrey, PixPredatorPrey and Organism to a separate package.
+- Added "renderText(BitmapFont)" to Engine and Automata.
+
+
+================
+** 2017-08-20 **
+================
+- Created the project.
+- Added Application, Engine, ShaderFactory, AbstractMesh, Cell, IndexGridMesh, IndexGridMesh, Triangle, Vertex, Organism, and PredatorPrey.
