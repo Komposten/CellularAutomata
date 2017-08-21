@@ -85,13 +85,13 @@ public class GridMesh extends AbstractMesh
 	{
 		createVertexArray();
 		
-		System.out.println("Creating mesh...");
+//		System.out.println("Creating mesh...");
 		if (mesh == null)
 			mesh = new Mesh(false, true, vertexArray.length, 0, Vertex.VERTEX_ATTRIBUTES);
 		
 		mesh.setVertices(vertexArray);
 		
-		System.out.println("Mesh created!");
+//		System.out.println("Mesh created!");
 		
 //		System.out.println("Vertex objects: " + (cells.length * Cell.VERTICES_PER_CELL) + ", floats: " + vertexArray.length + ", in mesh: " + mesh.getNumVertices());
 	}

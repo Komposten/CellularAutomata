@@ -1,19 +1,22 @@
 package komposten.automata.predatorprey;
 
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.RandomXS128;
 
-import komposten.automata.Automata;
+import komposten.automata.Automaton;
 import komposten.automata.backend.ShaderFactory;
 import komposten.automata.backend.rendering.GridMesh;
 import komposten.automata.predatorprey.Organism.Type;
 
-public class PredatorPrey extends Automata
+public class PredatorPrey extends Automaton
 {
 	private static final int CELL_SIZE = 5;
+	
+	private OrthographicCamera camera;
 	private GridMesh mesh;
 	private ShaderProgram shader;
 	
@@ -21,14 +24,19 @@ public class PredatorPrey extends Automata
 	private RandomXS128 random;
 	
 	
-	public PredatorPrey(int width, int height)
+	public PredatorPrey(int width, int height, OrthographicCamera orthographicCamera)
 	{
 		super("PredatorPrey");
+		camera = orthographicCamera;
 		mesh = new GridMesh(width, height, CELL_SIZE);
 		shader = ShaderFactory.getShader(ShaderFactory.DEFAULT_COLOR);
 		random = new RandomXS128();
 		
 		organisms = new Organism[mesh.getCellCount()];
+
+		shader.begin();
+		shader.setUniformMatrix("u_projTrans", camera.combined);
+		shader.end();
 		
 		createStartingGrid();
 	}

@@ -9,6 +9,8 @@
 - Moved PredatorPrey, PixPredatorPrey and Organism to a separate package.
 - Added SimpleEvolution and EvolvingOrganism.
 - Added "renderText(BitmapFont)" to Engine and Automata.
+- Cameras are now passed to Automata, so that they can control them/chose what camera to use.
+- Renamed Automata to Automaton.
 
 
 ================

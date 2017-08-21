@@ -5,9 +5,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.profiling.GL30Profiler;
@@ -18,7 +18,8 @@ import komposten.automata.backend.ShaderFactory;
 
 public class Application extends ApplicationAdapter
 {
-	private Camera camera;
+	private OrthographicCamera orthographicCamera;
+	private PerspectiveCamera perspectiveCamera;
 	private SpriteBatch batch;
 	
 	private BitmapFont font;
@@ -36,13 +37,15 @@ public class Application extends ApplicationAdapter
 		int width = Gdx.graphics.getWidth();
 		int height = Gdx.graphics.getHeight();
 		
-		camera = new OrthographicCamera(width, height);
-		camera.translate(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
-		camera.update();
+		orthographicCamera = new OrthographicCamera(width, height);
+		orthographicCamera.translate(orthographicCamera.viewportWidth / 2, orthographicCamera.viewportHeight / 2, 0);
+		orthographicCamera.update();
 		
-		ShaderFactory.initialise(camera);
+		perspectiveCamera = new PerspectiveCamera(90, width, height);
 		
-		engine = new Engine(width, height);
+		ShaderFactory.initialise(orthographicCamera);
+		
+		engine = new Engine(width, height, orthographicCamera, perspectiveCamera);
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		

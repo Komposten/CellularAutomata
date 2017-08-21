@@ -4,11 +4,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
 
-public abstract class Automata implements Disposable
+public abstract class Automaton implements Disposable
 {
 	private String name;
 	
-	public Automata(String name)
+	public Automaton(String name)
 	{
 		this.name = name;
 	}

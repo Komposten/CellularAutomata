@@ -1,21 +1,23 @@
 package komposten.automata.predatorprey;
 
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.RandomXS128;
 
-import komposten.automata.Automata;
+import komposten.automata.Automaton;
 import komposten.automata.backend.ShaderFactory;
 import komposten.automata.backend.rendering.GridPixmap;
 import komposten.automata.backend.rendering.Quad;
 import komposten.automata.predatorprey.Organism.Type;
 
-public class PixPredatorPrey extends Automata
+public class PixPredatorPrey extends Automaton
 {
 	private static final int CELL_SIZE = 1;
-	
+
+	private OrthographicCamera camera;
 	private Quad quad;
 	private GridPixmap mesh;
 	private ShaderProgram shader;
@@ -24,15 +26,21 @@ public class PixPredatorPrey extends Automata
 	private RandomXS128 random;
 	
 	
-	public PixPredatorPrey(int width, int height)
+	
+	public PixPredatorPrey(int width, int height, OrthographicCamera orthographicCamera)
 	{
 		super("PixPredatorPrey");
+		camera = orthographicCamera;
 		mesh = new GridPixmap(width, height, CELL_SIZE);
 		shader = ShaderFactory.getShader(ShaderFactory.DEFAULT_TEXTURE);
 		random = new RandomXS128();
 		
 		organisms = new Organism[mesh.getCellCount()];
 		quad = new Quad(width, height, true);
+
+		shader.begin();
+		shader.setUniformMatrix("u_projTrans", camera.combined);
+		shader.end();
 		
 		createStartingGrid();
 	}
