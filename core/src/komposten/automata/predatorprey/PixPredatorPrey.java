@@ -2,6 +2,7 @@ package komposten.automata.predatorprey;
 
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.RandomXS128;
 
@@ -166,7 +167,7 @@ public class PixPredatorPrey extends Automata
 	
 	
 	@Override
-	public void renderText(BitmapFont font)
+	public void renderText(BitmapFont font, SpriteBatch batch)
 	{
 	}
 

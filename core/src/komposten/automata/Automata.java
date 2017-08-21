@@ -1,6 +1,7 @@
 package komposten.automata;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
 
 public abstract class Automata implements Disposable
@@ -22,5 +23,5 @@ public abstract class Automata implements Disposable
 	protected abstract void createStartingGrid();
 	public abstract void update();
 	public abstract void render();
-	public abstract void renderText(BitmapFont font);
+	public abstract void renderText(BitmapFont font, SpriteBatch batch);
 }

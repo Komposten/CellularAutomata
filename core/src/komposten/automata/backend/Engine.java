@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
 
 import komposten.automata.Automata;
@@ -41,9 +42,9 @@ public class Engine implements Disposable
 	}
 	
 	
-	public void renderText(BitmapFont font)
+	public void renderText(BitmapFont font, SpriteBatch batch)
 	{
-		automatas.get(automataIndex).renderText(font);
+		automatas.get(automataIndex).renderText(font, batch);
 	}
 	
 	

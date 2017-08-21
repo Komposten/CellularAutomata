@@ -76,7 +76,7 @@ public class Application extends ApplicationAdapter
 		{
 			drawDebug(x, y - 30);
 		}
-		engine.renderText(font);
+		engine.renderText(font, batch);
 		batch.end();
 	}
 
