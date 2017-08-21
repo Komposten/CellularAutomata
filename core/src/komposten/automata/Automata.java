@@ -18,6 +18,7 @@ public abstract class Automata implements Disposable
 	}
 	
 	
+	protected abstract void createStartingGrid();
 	public abstract void update();
 	public abstract void render();
 }

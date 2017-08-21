@@ -1,9 +1,9 @@
-package komposten.automata;
+package komposten.automata.predatorprey;
 
 import com.badlogic.gdx.graphics.Color;
 
 
-public class Organism
+class Organism
 {
 	public static final int MAX_HEALTH = 100;
 	private static final int START_HEALTH = 10;

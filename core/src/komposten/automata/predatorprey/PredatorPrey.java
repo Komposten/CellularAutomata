@@ -1,12 +1,13 @@
-package komposten.automata;
+package komposten.automata.predatorprey;
 
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.RandomXS128;
 
-import komposten.automata.Organism.Type;
+import komposten.automata.Automata;
 import komposten.automata.backend.ShaderFactory;
 import komposten.automata.backend.rendering.GridMesh;
+import komposten.automata.predatorprey.Organism.Type;
 
 public class PredatorPrey extends Automata
 {
@@ -31,7 +32,8 @@ public class PredatorPrey extends Automata
 	}
 	
 	
-	private void createStartingGrid()
+	@Override
+	protected void createStartingGrid()
 	{
 		for (int i = 0; i < organisms.length; i++)
 		{
