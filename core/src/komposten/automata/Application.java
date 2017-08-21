@@ -76,6 +76,7 @@ public class Application extends ApplicationAdapter
 		{
 			drawDebug(x, y - 30);
 		}
+		engine.renderText(font);
 		batch.end();
 	}
 
@@ -102,11 +103,11 @@ public class Application extends ApplicationAdapter
 		String textureBinds = "Texture bindings: " + GL30Profiler.textureBindings;
 		String time = "Timer: " + formatTime((long)(timer*1E9));
 		
-		font.draw(batch, fps, 10, y);
-		font.draw(batch, drawCalls, 10, y - 20);
-		font.draw(batch, shaderSwitches, 10, y - 40);
-		font.draw(batch, textureBinds, 10, y - 60);
-		font.draw(batch, time, 10, y - 80);
+		font.draw(batch, fps, x, y);
+		font.draw(batch, drawCalls, x, y - 20);
+		font.draw(batch, shaderSwitches, x, y - 40);
+		font.draw(batch, textureBinds, x, y - 60);
+		font.draw(batch, time, x, y - 80);
 		font.getCache().clear();
 
 		GL30Profiler.reset();

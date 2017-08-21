@@ -3,11 +3,14 @@ package komposten.automata.backend;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.Disposable;
 
 import komposten.automata.Automata;
 import komposten.automata.PixPredatorPrey;
 import komposten.automata.PredatorPrey;
+import komposten.automata.predatorprey.PixPredatorPrey;
+import komposten.automata.predatorprey.PredatorPrey;
 
 public class Engine implements Disposable
 {
@@ -37,6 +40,12 @@ public class Engine implements Disposable
 	public void render()
 	{
 		automatas.get(automataIndex).render();
+	}
+	
+	
+	public void renderText(BitmapFont font)
+	{
+		automatas.get(automataIndex).renderText(font);
 	}
 	
 	

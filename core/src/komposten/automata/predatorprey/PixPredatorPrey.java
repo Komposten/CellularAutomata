@@ -1,6 +1,7 @@
 package komposten.automata.predatorprey;
 
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.RandomXS128;
 
@@ -15,7 +16,7 @@ public class PixPredatorPrey extends Automata
 	private static final int CELL_SIZE = 1;
 	
 	private Quad quad;
-	private GridPixmap gridPixmap;
+	private GridPixmap mesh;
 	private ShaderProgram shader;
 	
 	private Organism[] organisms;
@@ -25,11 +26,11 @@ public class PixPredatorPrey extends Automata
 	public PixPredatorPrey(int width, int height)
 	{
 		super("PixPredatorPrey");
-		gridPixmap = new GridPixmap(width, height, CELL_SIZE);
+		mesh = new GridPixmap(width, height, CELL_SIZE);
 		shader = ShaderFactory.getShader(ShaderFactory.DEFAULT_TEXTURE);
 		random = new RandomXS128();
 		
-		organisms = new Organism[gridPixmap.getCellCount()];
+		organisms = new Organism[mesh.getCellCount()];
 		quad = new Quad(width, height, true);
 		
 		createStartingGrid();
@@ -43,10 +44,10 @@ public class PixPredatorPrey extends Automata
 		{
 			Organism organism = new Organism(getRandomType());
 			organisms[i] = organism;
-			gridPixmap.setColor(organism.getColor(), i);
+			mesh.setColor(organism.getColor(), i);
 		}
 		
-		gridPixmap.refreshTexture();
+		mesh.refreshTexture();
 	}
 
 
@@ -66,21 +67,21 @@ public class PixPredatorPrey extends Automata
 	@Override
 	public void update()
 	{
-		for (int r = 0; r < gridPixmap.getRowCount(); r++)
+		for (int r = 0; r < mesh.getRowCount(); r++)
 		{
-			for (int c = 0; c < gridPixmap.getColumnCount(); c++)
+			for (int c = 0; c < mesh.getColumnCount(); c++)
 			{
-				int index = gridPixmap.getIndex(r, c);
+				int index = mesh.getIndex(r, c);
 				
 				Organism organism = organisms[index];
 
 				int adjacentR = r + random.nextInt(3) - 1;
 				int adjacentC = c + random.nextInt(3) - 1;
 				
-				if (adjacentR < 0 || adjacentR >= gridPixmap.getRowCount()) continue;
-				if (adjacentC < 0 || adjacentC >= gridPixmap.getColumnCount()) continue;
+				if (adjacentR < 0 || adjacentR >= mesh.getRowCount()) continue;
+				if (adjacentC < 0 || adjacentC >= mesh.getColumnCount()) continue;
 				
-				Organism neighbour = organisms[gridPixmap.getIndex(adjacentR, adjacentC)];
+				Organism neighbour = organisms[mesh.getIndex(adjacentR, adjacentC)];
 				
 				switch (organism.getType())
 				{
@@ -96,19 +97,19 @@ public class PixPredatorPrey extends Automata
 				
 				if (organism.isDirty())
 				{
-					gridPixmap.setColor(organism.getColor(), r, c);
+					mesh.setColor(organism.getColor(), r, c);
 					organism.clearDirty();
 				}
 				
 				if (neighbour.isDirty())
 				{
-					gridPixmap.setColor(neighbour.getColor(), adjacentR, adjacentC);
+					mesh.setColor(neighbour.getColor(), adjacentR, adjacentC);
 					neighbour.clearDirty();
 				}
 			}
 		}
 		
-		gridPixmap.refreshTexture();
+		mesh.refreshTexture();
 	}
 	
 	
@@ -158,15 +159,21 @@ public class PixPredatorPrey extends Automata
 	public void render()
 	{
 		shader.begin();
-		gridPixmap.getTexture().bind(0);
+		mesh.getTexture().bind(0);
 		quad.render(shader, GL30.GL_TRIANGLES);
 		shader.end();
+	}
+	
+	
+	@Override
+	public void renderText(BitmapFont font)
+	{
 	}
 
 
 	@Override
 	public void dispose()
 	{
-		gridPixmap.dispose();
+		mesh.dispose();
 	}
 }

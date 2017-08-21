@@ -1,6 +1,7 @@
 package komposten.automata.predatorprey;
 
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.RandomXS128;
 
@@ -12,7 +13,7 @@ import komposten.automata.predatorprey.Organism.Type;
 public class PredatorPrey extends Automata
 {
 	private static final int CELL_SIZE = 5;
-	private GridMesh gridMesh;
+	private GridMesh mesh;
 	private ShaderProgram shader;
 	
 	private Organism[] organisms;
@@ -22,11 +23,11 @@ public class PredatorPrey extends Automata
 	public PredatorPrey(int width, int height)
 	{
 		super("PredatorPrey");
-		gridMesh = new GridMesh(width, height, CELL_SIZE);
+		mesh = new GridMesh(width, height, CELL_SIZE);
 		shader = ShaderFactory.getShader(ShaderFactory.DEFAULT_COLOR);
 		random = new RandomXS128();
 		
-		organisms = new Organism[gridMesh.getCellCount()];
+		organisms = new Organism[mesh.getCellCount()];
 		
 		createStartingGrid();
 	}
@@ -39,10 +40,10 @@ public class PredatorPrey extends Automata
 		{
 			Organism organism = new Organism(getRandomType());
 			organisms[i] = organism;
-			gridMesh.setColor(organism.getColor(), i);
+			mesh.setColor(organism.getColor(), i);
 		}
 		
-		gridMesh.refreshMesh();
+		mesh.refreshMesh();
 	}
 
 
@@ -62,21 +63,21 @@ public class PredatorPrey extends Automata
 	@Override
 	public void update()
 	{
-		for (int r = 0; r < gridMesh.getRowCount(); r++)
+		for (int r = 0; r < mesh.getRowCount(); r++)
 		{
-			for (int c = 0; c < gridMesh.getColumnCount(); c++)
+			for (int c = 0; c < mesh.getColumnCount(); c++)
 			{
-				int index = gridMesh.getIndex(r, c);
+				int index = mesh.getIndex(r, c);
 				
 				Organism organism = organisms[index];
 
 				int adjacentR = r + random.nextInt(3) - 1;
 				int adjacentC = c + random.nextInt(3) - 1;
 				
-				if (adjacentR < 0 || adjacentR >= gridMesh.getRowCount()) continue;
-				if (adjacentC < 0 || adjacentC >= gridMesh.getColumnCount()) continue;
+				if (adjacentR < 0 || adjacentR >= mesh.getRowCount()) continue;
+				if (adjacentC < 0 || adjacentC >= mesh.getColumnCount()) continue;
 				
-				Organism neighbour = organisms[gridMesh.getIndex(adjacentR, adjacentC)];
+				Organism neighbour = organisms[mesh.getIndex(adjacentR, adjacentC)];
 				
 				switch (organism.getType())
 				{
@@ -92,19 +93,19 @@ public class PredatorPrey extends Automata
 				
 				if (organism.isDirty())
 				{
-					gridMesh.setColor(organism.getColor(), r, c);
+					mesh.setColor(organism.getColor(), r, c);
 					organism.clearDirty();
 				}
 				
 				if (neighbour.isDirty())
 				{
-					gridMesh.setColor(neighbour.getColor(), adjacentR, adjacentC);
+					mesh.setColor(neighbour.getColor(), adjacentR, adjacentC);
 					neighbour.clearDirty();
 				}
 			}
 		}
 		
-		gridMesh.refreshMesh();
+		mesh.refreshMesh();
 	}
 	
 	
@@ -154,14 +155,20 @@ public class PredatorPrey extends Automata
 	public void render()
 	{
 		shader.begin();
-		gridMesh.getMesh().render(shader, GL30.GL_TRIANGLES);
+		mesh.getMesh().render(shader, GL30.GL_TRIANGLES);
 		shader.end();
+	}
+	
+	
+	@Override
+	public void renderText(BitmapFont font)
+	{
 	}
 
 
 	@Override
 	public void dispose()
 	{
-		gridMesh.dispose();
+		mesh.dispose();
 	}
 }
