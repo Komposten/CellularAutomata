@@ -7,6 +7,7 @@
 - Added input handling to toggle debug info.
 - Added input handling to change between available automata.
 - Moved PredatorPrey, PixPredatorPrey and Organism to a separate package.
+- Added SimpleEvolution and EvolvingOrganism.
 - Added "renderText(BitmapFont)" to Engine and Automata.
 
 

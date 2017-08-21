@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Disposable;
 import komposten.automata.Automata;
 import komposten.automata.predatorprey.PixPredatorPrey;
 import komposten.automata.predatorprey.PredatorPrey;
+import komposten.automata.simpleevolution.SimpleEvolution;
 
 public class Engine implements Disposable
 {
@@ -24,6 +25,7 @@ public class Engine implements Disposable
 		automatas = new ArrayList<>();
 		automatas.add(new PredatorPrey(width, height));
 		automatas.add(new PixPredatorPrey(width, height));
+		automatas.add(new SimpleEvolution(width, height));
 	}
 	
 	
