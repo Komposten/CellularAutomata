@@ -23,10 +23,10 @@ public class Application extends ApplicationAdapter
 	
 	private BitmapFont font;
 	
-	private Engine engine;	
+	private Engine engine;
 	
-	private long lastTime;
-	private long timer;
+	private double timer;
+	private double gcTimer;
 	
 	private boolean debug;
 	
@@ -53,22 +53,13 @@ public class Application extends ApplicationAdapter
 	@Override
 	public void render()
 	{
-		long currentTime = System.nanoTime();
-		if (lastTime == 0)
+		timer += Gdx.graphics.getDeltaTime();
+		gcTimer += Gdx.graphics.getDeltaTime();
+		
+		if (gcTimer > 60)
 		{
-			lastTime = currentTime;
-		}
-		else
-		{
-			timer += currentTime - lastTime;
-			lastTime = currentTime;
-			
-			if (timer % 60E9 < 1E9)
-			{
-				System.out.println("GC");
-				System.gc();
-				timer = 0;
-			}
+			runGC();
+			gcTimer = 0;
 		}
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -89,13 +80,27 @@ public class Application extends ApplicationAdapter
 	}
 
 
+	private void runGC()
+	{
+		Thread thread = new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				System.gc();
+			}
+		});
+		thread.start();
+	}
+
+
 	private void drawDebug(int x, int y)
 	{
 		String fps = "FPS: " + Gdx.graphics.getFramesPerSecond();
 		String drawCalls = "Draw calls: " + GL30Profiler.drawCalls;
 		String shaderSwitches = "Shader switches: " + GL30Profiler.shaderSwitches;
 		String textureBinds = "Texture bindings: " + GL30Profiler.textureBindings;
-		String time = "Timer: " + formatTime(timer);
+		String time = "Timer: " + formatTime((long)(timer*1E9));
 		
 		font.draw(batch, fps, 10, y);
 		font.draw(batch, drawCalls, 10, y - 20);
@@ -112,7 +117,7 @@ public class Application extends ApplicationAdapter
 	{
 		int minutes = (int) (nanoTime / 60E9d);
 		int seconds = (int) (nanoTime / 1E9d) - (minutes * 60);
-		int hundreds = (int) (nanoTime / 1E7d) - (seconds * 100);
+		int hundreds = (int) (((nanoTime / 1E9d) % 1) * 100);
 		return String.format("%1$02d:%2$02d:%3$02d", minutes, seconds, hundreds);
 	}
 	/*
