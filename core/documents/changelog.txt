@@ -5,6 +5,7 @@
 - Application now clears the depth buffer using glClear().
 - Added various getters to GridMesh3D to more easily track it with the camera.
 - Fixed incorrect labelling and colouring of the "planes"/"sides" in Cell3D.
+- Fixed the texture coordinates set by Cell3D.
 
 
 ================

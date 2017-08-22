@@ -15,7 +15,6 @@ public class Cell3D
 	{
 		vertices = new Vertex[VERTICES_PER_CELL];
 		
-		//TODO Cell3D; Fix tex coords.
 		float red, green, blue;
 		float alpha = color.a;
 		
@@ -23,12 +22,12 @@ public class Cell3D
 		red = color.r * 0.6f;
 		green = color.g * 0.6f;
 		blue = color.b * 0.6f;
-		vertices[0] = new Vertex(x, y+size, z, 0, 0, red, green, blue, alpha); //Upper back left
-		vertices[1] = new Vertex(x+size, y+size, z, 1, 0, red, green, blue, alpha); //Upper back right
-		vertices[2] = new Vertex(x+size, y, z, 1, 1, red, green, blue, alpha); //Lower back right
-		vertices[3] = new Vertex(x, y+size, z, 0, 0, red, green, blue, alpha); //Upper back left
-		vertices[4] = new Vertex(x+size, y, z, 1, 1, red, green, blue, alpha); //Lower back right
-		vertices[5] = new Vertex(x, y, z, 0, 1, red, green, blue, alpha); //Lower back left
+		vertices[0] = new Vertex(x, y+size, z, 1, 0, red, green, blue, alpha); //Upper back left
+		vertices[1] = new Vertex(x+size, y+size, z, 0, 0, red, green, blue, alpha); //Upper back right
+		vertices[2] = new Vertex(x+size, y, z, 0, 1, red, green, blue, alpha); //Lower back right
+		vertices[3] = new Vertex(x, y+size, z, 1, 0, red, green, blue, alpha); //Upper back left
+		vertices[4] = new Vertex(x+size, y, z, 0, 1, red, green, blue, alpha); //Lower back right
+		vertices[5] = new Vertex(x, y, z, 1, 1, red, green, blue, alpha); //Lower back left
 		
 		//Front
 		red = color.r * 0.6f;
@@ -45,10 +44,10 @@ public class Cell3D
 		red = color.r * 0.8f;
 		green = color.g * 0.8f;
 		blue = color.b * 0.8f;
-		vertices[12] = new Vertex(x, y+size, z+size, 0, 0, red, green, blue, alpha); //Upper front left
+		vertices[12] = new Vertex(x, y+size, z+size, 1, 0, red, green, blue, alpha); //Upper front left
 		vertices[13] = new Vertex(x, y, z, 0, 1, red, green, blue, alpha); //Lower back left
-		vertices[14] = new Vertex(x, y, z+size, 0, 1, red, green, blue, alpha); //Lower front left
-		vertices[15] = new Vertex(x, y+size, z+size, 0, 0, red, green, blue, alpha); //Upper front left
+		vertices[14] = new Vertex(x, y, z+size, 1, 1, red, green, blue, alpha); //Lower front left
+		vertices[15] = new Vertex(x, y+size, z+size, 1, 0, red, green, blue, alpha); //Upper front left
 		vertices[16] = new Vertex(x, y+size, z, 0, 0, red, green, blue, alpha); //Upper back left
 		vertices[17] = new Vertex(x, y, z, 0, 1, red, green, blue, alpha); //Lower back left
 		
@@ -57,11 +56,11 @@ public class Cell3D
 		green = color.g * 0.4f;
 		blue = color.b * 0.4f;
 		vertices[18] = new Vertex(x+size, y+size, z, 1, 0, red, green, blue, alpha); //Upper back right
-		vertices[19] = new Vertex(x+size, y+size, z+size, 1, 0, red, green, blue, alpha); //Upper front right
+		vertices[19] = new Vertex(x+size, y+size, z+size, 0, 0, red, green, blue, alpha); //Upper front right
 		vertices[20] = new Vertex(x+size, y, z, 1, 1, red, green, blue, alpha); //Lower back right
-		vertices[21] = new Vertex(x+size, y, z+size, 1, 1, red, green, blue, alpha); //Lower front right
+		vertices[21] = new Vertex(x+size, y, z+size, 0, 1, red, green, blue, alpha); //Lower front right
 		vertices[22] = new Vertex(x+size, y, z, 1, 1, red, green, blue, alpha); //Lower back right
-		vertices[23] = new Vertex(x+size, y+size, z+size, 1, 0, red, green, blue, alpha); //Upper front right
+		vertices[23] = new Vertex(x+size, y+size, z+size, 0, 0, red, green, blue, alpha); //Upper front right
 		
 		//Bottom
 		red = color.r * 0.2f;
@@ -69,9 +68,9 @@ public class Cell3D
 		blue = color.b * 0.2f;
 		vertices[24] = new Vertex(x, y, z, 0, 1, red, green, blue, alpha); //Lower back left
 		vertices[25] = new Vertex(x+size, y, z, 1, 1, red, green, blue, alpha); //Lower back right
-		vertices[26] = new Vertex(x, y, z+size, 0, 1, red, green, blue, alpha); //Lower front left
-		vertices[27] = new Vertex(x+size, y, z+size, 1, 1, red, green, blue, alpha); //Lower front right
-		vertices[28] = new Vertex(x, y, z+size, 0, 1, red, green, blue, alpha); //Lower front left
+		vertices[26] = new Vertex(x, y, z+size, 0, 0, red, green, blue, alpha); //Lower front left
+		vertices[27] = new Vertex(x+size, y, z+size, 1, 0, red, green, blue, alpha); //Lower front right
+		vertices[28] = new Vertex(x, y, z+size, 0, 0, red, green, blue, alpha); //Lower front left
 		vertices[29] = new Vertex(x+size, y, z, 1, 1, red, green, blue, alpha); //Lower back right
 
 		//Top
@@ -79,11 +78,11 @@ public class Cell3D
 		green = color.g;
 		blue = color.b;
 		vertices[30] = new Vertex(x, y+size, z, 0, 0, red, green, blue, alpha); //Upper back left
-		vertices[31] = new Vertex(x, y+size, z+size, 0, 0, red, green, blue, alpha); //Upper front left
+		vertices[31] = new Vertex(x, y+size, z+size, 0, 1, red, green, blue, alpha); //Upper front left
 		vertices[32] = new Vertex(x+size, y+size, z, 1, 0, red, green, blue, alpha); //Upper back right
-		vertices[33] = new Vertex(x+size, y+size, z+size, 1, 0, red, green, blue, alpha); //Upper front right
+		vertices[33] = new Vertex(x+size, y+size, z+size, 1, 1, red, green, blue, alpha); //Upper front right
 		vertices[34] = new Vertex(x+size, y+size, z, 1, 0, red, green, blue, alpha); //Upper back right
-		vertices[35] = new Vertex(x, y+size, z+size, 0, 0, red, green, blue, alpha); //Upper front left
+		vertices[35] = new Vertex(x, y+size, z+size, 0, 1, red, green, blue, alpha); //Upper front left
 	}
 	
 	
