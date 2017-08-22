@@ -14,6 +14,7 @@ public class GridMesh3D implements Disposable
 	private Cell3D[] cells;
 	private float[] vertexArray;
 	
+	private int cellCount;
 	private int width; //X
 	private int height; //Y
 	private int depth; //Z
@@ -26,6 +27,20 @@ public class GridMesh3D implements Disposable
 		this.height = rows;
 		this.depth = layers;
 		this.cellSize = cellSize;
+		this.cellCount = width * height * depth;
+		
+		long cellCountLong = (long)width * (long)height * depth;
+		long vertexCount = cellCountLong * Cell3D.VERTICES_PER_CELL;
+		long byteCount = vertexCount * Vertex.VERTEX_ATTRIBUTES.vertexSize;
+		
+		if (cellCountLong > Integer.MAX_VALUE || vertexCount > Integer.MAX_VALUE
+				|| byteCount > Integer.MAX_VALUE)
+		{
+			int maxCellCount = Integer.MAX_VALUE / Vertex.VERTEX_ATTRIBUTES.vertexSize / Cell3D.VERTICES_PER_CELL;
+			throw new IllegalArgumentException("Cannot create a grid of size [" + rows
+					+ "x" + columns + "x" + layers + "], it has too many cells ("
+					+ cellCountLong + ">" + maxCellCount + ")!");
+		}
 		
 		createCells();
 		createMesh();
@@ -34,7 +49,7 @@ public class GridMesh3D implements Disposable
 
 	private void createCells()
 	{
-		cells = new Cell3D[width * height * depth];
+		cells = new Cell3D[cellCount];
 
 		RandomXS128 random = new RandomXS128();
 		//Create cells.
@@ -58,7 +73,6 @@ public class GridMesh3D implements Disposable
 			}
 		}
 		
-		int cellCount = cells.length;
 		int vertexCount = cellCount * Cell3D.VERTICES_PER_CELL;
 		int floatCount = vertexCount * Vertex.VALUES_PER_VERTEX;
 		System.out.println("===CELLS:\n" + "  " + width + " * " + height + " * "
@@ -74,7 +88,7 @@ public class GridMesh3D implements Disposable
 		createVertexArray();
 		
 		if (mesh == null)
-			mesh = new Mesh(false, true, vertexArray.length, 0, Vertex.VERTEX_ATTRIBUTES);
+			mesh = new Mesh(false, true, getCellCount() * Cell3D.VERTICES_PER_CELL, 0, Vertex.VERTEX_ATTRIBUTES);
 		
 		mesh.setVertices(vertexArray);
 		
@@ -138,7 +152,7 @@ public class GridMesh3D implements Disposable
 	
 	public int getCellCount()
 	{
-		return cells.length;
+		return cellCount;
 	}
 	
 	
