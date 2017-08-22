@@ -14,15 +14,15 @@ public class Vertex
 
 	public static final int VALUES_PER_VERTEX = 9;
 	
-	float x;
-	float y;
-	float z;
-	float u;
-	float v;
-	float r;
-	float g;
-	float b;
-	float a;
+	public float x;
+	public float y;
+	public float z;
+	public float u;
+	public float v;
+	public float r;
+	public float g;
+	public float b;
+	public float a;
 
 
 	public Vertex(float x, float y, float z, float u, float v, float r, float g, float b, float a)
