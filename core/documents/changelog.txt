@@ -1,4 +1,12 @@
 ================
+** 2017-08-22 **
+================
+- Application now enables GL_CULL_FACE and GL_DEPTH_TEST before drawing the GridMesh3D, and disables them afterwards.
+- Application now clears the depth buffer using glClear().
+- Added various getters to GridMesh3D to more easily track it with the camera.
+
+
+================
 ** 2017-08-21 **
 ================
 - Created the abstract Automata class.

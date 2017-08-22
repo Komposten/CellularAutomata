@@ -20,13 +20,11 @@ public class GridMesh3D implements Disposable
 	private int cellSize;
 	
 	
-
-
-	public GridMesh3D(int rows, int columns, int levels, int cellSize)
+	public GridMesh3D(int rows, int columns, int layers, int cellSize)
 	{
 		this.width = columns;
 		this.height = rows;
-		this.depth = levels;
+		this.depth = layers;
 		this.cellSize = cellSize;
 		
 		createCells();
@@ -52,17 +50,22 @@ public class GridMesh3D implements Disposable
 					float yPos = y * cellSize;
 					float zPos = z * cellSize;
 					
-					Cell3D cell = new Cell3D(xPos, yPos, zPos, cellSize, new Color(random.nextFloat(), random.nextFloat(), random.nextFloat(), 1));
+					Color colour = new Color(random.nextFloat(), random.nextFloat(), random.nextFloat(), 1);
+					Cell3D cell = new Cell3D(xPos, yPos, zPos, cellSize, colour);
 					
 					cells[index] = cell;
 				}
 			}
 		}
 		
-
-		System.out.println("===CELLS: [" + width + ", " + height + ", " + depth + "]=" + cells.length);
-//		System.out.println("===lower left: " + vertices[0].toString(true) + ", upper right: " + vertices[vertices.length-1].toString(true));
-//		printArray(vertices, columnVertices);
+		int cellCount = cells.length;
+		int vertexCount = cellCount * Cell3D.VERTICES_PER_CELL;
+		int floatCount = vertexCount * Vertex.VALUES_PER_VERTEX;
+		System.out.println("===CELLS:\n" + "  " + width + " * " + height + " * "
+				+ depth + " => " + cellCount + " cells.\n" + "  " + cellCount + " * "
+				+ Cell3D.VERTICES_PER_CELL + " = " + vertexCount + " vertices.\n" + "  "
+				+ vertexCount + " * " + Vertex.VALUES_PER_VERTEX + " = " + floatCount
+				+ " floats.");
 	}
 
 
@@ -70,15 +73,13 @@ public class GridMesh3D implements Disposable
 	{
 		createVertexArray();
 		
-//		System.out.println("Creating mesh...");
 		if (mesh == null)
 			mesh = new Mesh(false, true, vertexArray.length, 0, Vertex.VERTEX_ATTRIBUTES);
 		
 		mesh.setVertices(vertexArray);
 		
-//		System.out.println("Mesh created!");
 		
-		System.out.println("Vertex objects: " + (cells.length * Cell3D.VERTICES_PER_CELL) + ", floats: " + vertexArray.length + ", in mesh: " + mesh.getNumVertices());
+//		System.out.println("Vertex objects: " + (cells.length * Cell3D.VERTICES_PER_CELL) + ", floats: " + vertexArray.length + ", in mesh: " + mesh.getNumVertices());
 	}
 	
 	
@@ -114,6 +115,36 @@ public class GridMesh3D implements Disposable
 	public Mesh getMesh()
 	{
 		return mesh;
+	}
+	
+	
+	public int getColumnCount()
+	{
+		return width;
+	}
+	
+	
+	public int getRowCount()
+	{
+		return height;
+	}
+	
+	
+	public int getLayerCount()
+	{
+		return depth;
+	}
+	
+	
+	public int getCellCount()
+	{
+		return cells.length;
+	}
+	
+	
+	public int getCellSize()
+	{
+		return cellSize;
 	}
 	
 	

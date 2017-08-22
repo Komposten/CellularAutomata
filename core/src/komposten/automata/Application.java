@@ -42,7 +42,6 @@ public class Application extends ApplicationAdapter
 		int width = Gdx.graphics.getWidth();
 		int height = Gdx.graphics.getHeight();
 
-		Gdx.gl.glEnable(GL30.GL_CULL_FACE);
 		Gdx.input.setCursorCatched(true);
 		
 		orthographicCamera = new OrthographicCamera(width, height);
@@ -50,9 +49,9 @@ public class Application extends ApplicationAdapter
 		orthographicCamera.update();
 		
 		perspectiveCamera = new PerspectiveCamera(67, width, height);
-		perspectiveCamera.translate(50, 5, 0);
+		perspectiveCamera.translate(150, 150, 0);
 		perspectiveCamera.near = 1f;
-		perspectiveCamera.far = 100f;
+		perspectiveCamera.far = 1000f;
 		perspectiveCamera.update();
 		
 		ShaderFactory.initialise(orthographicCamera);
@@ -62,7 +61,7 @@ public class Application extends ApplicationAdapter
 		font = new BitmapFont();
 		
 		System.out.println("Creating GridMesh3D...");
-		mesh = new GridMesh3D(1, 1, 1, 10);
+		mesh = new GridMesh3D(10, 10, 10, 10);
 		
 		Gdx.input.setInputProcessor(processor);
 	}
@@ -81,16 +80,20 @@ public class Application extends ApplicationAdapter
 		}
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
+		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
 		
 		engine.update();
 //		engine.render();
-		
+
+		Gdx.gl.glEnable(GL30.GL_CULL_FACE);
+		Gdx.gl.glEnable(GL30.GL_DEPTH_TEST);
 		ShaderProgram shader = ShaderFactory.getShader(ShaderFactory.DEFAULT_COLOR);
 		shader.begin();
 		shader.setUniformMatrix("u_projTrans", perspectiveCamera.combined);
 		mesh.getMesh().render(shader, GL30.GL_TRIANGLES);
 		shader.end();
+		Gdx.gl.glDisable(GL30.GL_CULL_FACE);
+		Gdx.gl.glDisable(GL30.GL_DEPTH_TEST);
 		
 		
 		batch.begin();
@@ -128,13 +131,15 @@ public class Application extends ApplicationAdapter
 		String drawCalls = "Draw calls: " + GL30Profiler.drawCalls;
 		String shaderSwitches = "Shader switches: " + GL30Profiler.shaderSwitches;
 		String textureBinds = "Texture bindings: " + GL30Profiler.textureBindings;
+		String glCalls = "GL calls: " + GL30Profiler.calls;
 		String time = "Timer: " + formatTime((long)(timer*1E9));
 		
 		font.draw(batch, fps, x, y);
 		font.draw(batch, drawCalls, x, y - 20);
 		font.draw(batch, shaderSwitches, x, y - 40);
 		font.draw(batch, textureBinds, x, y - 60);
-		font.draw(batch, time, x, y - 80);
+		font.draw(batch, glCalls, x, y - 80);
+		font.draw(batch, time, x, y - 100);
 		font.getCache().clear();
 
 		GL30Profiler.reset();
@@ -215,7 +220,7 @@ public class Application extends ApplicationAdapter
 		
 		if (update)
 		{
-			perspectiveCamera.lookAt(5, 5, 5);
+			perspectiveCamera.lookAt(mesh.getColumnCount()/2*mesh.getCellSize(), mesh.getRowCount()/2*mesh.getCellSize(), mesh.getLayerCount()/2*mesh.getCellSize());
 			perspectiveCamera.update();
 		}
 	}
