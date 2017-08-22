@@ -15,7 +15,7 @@ import komposten.automata.simpleevolution.EvolvingOrganism.Type;
 
 public class SimpleEvolution extends Automaton
 {
-	private static final int CELL_SIZE = 2;
+	private static final int CELL_SIZE = 5;
 	
 	private OrthographicCamera camera;
 	private Quad quad;
@@ -26,6 +26,10 @@ public class SimpleEvolution extends Automaton
 	private RandomXS128 random;
 	
 	private int living;
+	private int red;
+	private int green;
+	private int blue;
+	private int others;
 
 	
 	public SimpleEvolution(int width, int height, OrthographicCamera orthographicCamera)
@@ -75,7 +79,7 @@ public class SimpleEvolution extends Automaton
 	@Override
 	public void update()
 	{
-		living = 0;
+		living = red = green = blue = others = 0;
 		for (int r = 0; r < mesh.getRowCount(); r++)
 		{
 			for (int c = 0; c < mesh.getColumnCount(); c++)
@@ -95,6 +99,14 @@ public class SimpleEvolution extends Automaton
 				{
 					case Alive :
 						living++;
+						if (organism.getColor().r > organism.getColor().g && organism.getColor().r > organism.getColor().b)
+							red++;
+						else if (organism.getColor().g > organism.getColor().r && organism.getColor().g > organism.getColor().b)
+							green++;
+						else if (organism.getColor().b > organism.getColor().r && organism.getColor().b > organism.getColor().g)
+							blue++;
+						else
+							others++;
 						updateOrganism(organism, r, c, neighbour, adjacentR, adjacentC);
 						break;
 					case Dead :
@@ -142,12 +154,10 @@ public class SimpleEvolution extends Automaton
 							mesh.setColor(target.getColor(), index);
 							target.clearDirty();
 						}
-						
-						organism.changeHealth(-2);
 					}
 					else
 					{
-						organism.changeHealth(-5000);
+						organism.damage();
 					}
 				}
 				
@@ -195,7 +205,8 @@ public class SimpleEvolution extends Automaton
 	@Override
 	public void renderText(BitmapFont font, SpriteBatch batch)
 	{
-		font.draw(batch, "Alive: " + living, 10, 20);
+		String string = "Alive: " + living + "   Red: " + red + "   Green: " + green + "   Blue: " + blue + "   Others: " + others;
+		font.draw(batch, string, 10, 20);
 	}
 
 

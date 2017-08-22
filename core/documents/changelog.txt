@@ -1,4 +1,10 @@
 ================
+** 2017-08-22 **
+================
+- Updated SimpleEvolution and EvolvingOrganism. The colour values now affect the Organisms' survivability and reproduction. Still not working in a satisfying way, though.
+
+
+================
 ** 2017-08-21 **
 ================
 - Created the abstract Automata class.

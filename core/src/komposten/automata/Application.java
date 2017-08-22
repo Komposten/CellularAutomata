@@ -124,12 +124,6 @@ public class Application extends ApplicationAdapter
 		int hundreds = (int) (((nanoTime / 1E9d) % 1) * 100);
 		return String.format("%1$02d:%2$02d:%3$02d", minutes, seconds, hundreds);
 	}
-	/*
-	 * x = 1234567890
-	 * minutes = x / 60E9 = 0
-	 * seconds = x / 1E9 - 0 = 1.23 = 1
-	 * hundreds = x / 1E7 - 100 = 123 - 100 = 23
-	 */
 	
 	
 	private void toggleDebug()
