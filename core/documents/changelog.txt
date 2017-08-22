@@ -12,6 +12,8 @@
 - Cameras are now passed to Automata, so that they can control them/chose what camera to use.
 - Renamed Automata to Automaton.
 
+- Started working on GridMesh3D and Cell3D. Mesh is created properly and works for singular cells. Multiple cells give culling problems for all cells except the one at (0; 0; 0).
+
 
 ================
 ** 2017-08-20 **

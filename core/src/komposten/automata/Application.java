@@ -10,10 +10,13 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.profiling.GL30Profiler;
+import com.badlogic.gdx.math.Vector3;
 
 import komposten.automata.backend.Engine;
 import komposten.automata.backend.ShaderFactory;
+import komposten.automata.backend.rendering.g3d.GridMesh3D;
 
 
 public class Application extends ApplicationAdapter
@@ -31,23 +34,35 @@ public class Application extends ApplicationAdapter
 	
 	private boolean debug;
 	
+	private GridMesh3D mesh;
+	
 	@Override
 	public void create()
 	{
 		int width = Gdx.graphics.getWidth();
 		int height = Gdx.graphics.getHeight();
+
+		Gdx.gl.glEnable(GL30.GL_CULL_FACE);
+		Gdx.input.setCursorCatched(true);
 		
 		orthographicCamera = new OrthographicCamera(width, height);
 		orthographicCamera.translate(orthographicCamera.viewportWidth / 2, orthographicCamera.viewportHeight / 2, 0);
 		orthographicCamera.update();
 		
-		perspectiveCamera = new PerspectiveCamera(90, width, height);
+		perspectiveCamera = new PerspectiveCamera(67, width, height);
+		perspectiveCamera.translate(50, 5, 0);
+		perspectiveCamera.near = 1f;
+		perspectiveCamera.far = 100f;
+		perspectiveCamera.update();
 		
 		ShaderFactory.initialise(orthographicCamera);
 		
 		engine = new Engine(width, height, orthographicCamera, perspectiveCamera);
 		batch = new SpriteBatch();
 		font = new BitmapFont();
+		
+		System.out.println("Creating GridMesh3D...");
+		mesh = new GridMesh3D(1, 1, 1, 10);
 		
 		Gdx.input.setInputProcessor(processor);
 	}
@@ -69,7 +84,14 @@ public class Application extends ApplicationAdapter
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 		
 		engine.update();
-		engine.render();
+//		engine.render();
+		
+		ShaderProgram shader = ShaderFactory.getShader(ShaderFactory.DEFAULT_COLOR);
+		shader.begin();
+		shader.setUniformMatrix("u_projTrans", perspectiveCamera.combined);
+		mesh.getMesh().render(shader, GL30.GL_TRIANGLES);
+		shader.end();
+		
 		
 		batch.begin();
 		int x = 10;
@@ -81,6 +103,8 @@ public class Application extends ApplicationAdapter
 		}
 		engine.renderText(font, batch);
 		batch.end();
+		
+		readInput();
 	}
 
 
@@ -150,6 +174,53 @@ public class Application extends ApplicationAdapter
 	}
 	
 	
+	Vector3 dummy = new Vector3();
+	private void readInput()
+	{
+		boolean update = false;
+		if (Gdx.input.isKeyPressed(Input.Keys.W))
+		{
+			dummy.set(perspectiveCamera.direction.x, 0, perspectiveCamera.direction.z);
+			perspectiveCamera.translate(dummy);
+			update = true;
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.S))
+		{
+			dummy.set(-perspectiveCamera.direction.x, 0, -perspectiveCamera.direction.z);
+			perspectiveCamera.translate(dummy);
+			update = true;
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.D))
+		{
+			dummy.set(-perspectiveCamera.direction.z, 0, perspectiveCamera.direction.x);
+			perspectiveCamera.translate(dummy);
+			update = true;
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.A))
+		{
+			dummy.set(perspectiveCamera.direction.z, 0, -perspectiveCamera.direction.x);
+			perspectiveCamera.translate(dummy);
+			update = true;
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.SPACE))
+		{
+			perspectiveCamera.translate(0, 1, 0);
+			update = true;
+		}
+		if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+		{
+			perspectiveCamera.translate(0, -1, 0);
+			update = true;
+		}
+		
+		if (update)
+		{
+			perspectiveCamera.lookAt(5, 5, 5);
+			perspectiveCamera.update();
+		}
+	}
+	
+	
 	private InputProcessor processor = new InputAdapter()
 	{
 		@Override
@@ -185,6 +256,34 @@ public class Application extends ApplicationAdapter
 		public boolean keyDown(int keycode)
 		{
 			return false;
+		}
+		
+		
+		int oldX = -1;
+		int oldY = -1;
+		Vector3 right = new Vector3();
+		@Override
+		public boolean mouseMoved(int screenX, int screenY)
+		{
+			if (oldX == -1 || oldY == -1)
+			{
+				oldX = screenX;
+				oldY = screenY;
+				return false;
+			}
+			else
+			{
+				int dX = screenX - oldX;
+				int dY = screenY - oldY;
+				oldX = screenX;
+				oldY = screenY;
+				perspectiveCamera.rotate(perspectiveCamera.up, -dX / 5);
+				perspectiveCamera.update();
+				right.set(perspectiveCamera.direction.z, 0, -perspectiveCamera.direction.x);
+//				perspectiveCamera.rotate(right, dY / 5);
+				perspectiveCamera.update();
+				return true;
+			}
 		}
 	};
 }
