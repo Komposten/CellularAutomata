@@ -9,6 +9,8 @@
 - Fixed GridMesh3D setting maxVertices way too high ("vertices * VALUES_PER_VERTEX" rather than just "vertices").
 - GridMesh3D now throws an exception if the requested size is too large (i.e. cannot be fit in a single mesh).
 - Added cell and face visibility flags to Cell3D.
+- GridMesh3D now hides all Cell faces that are put against each other (visible neighbouring blocks).
+- GridMesh3D now uses a FloatArray object to store its vertices, to facilitate future removal and addition of vertices.
 
 
 ================
