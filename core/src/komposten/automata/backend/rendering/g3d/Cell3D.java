@@ -8,25 +8,27 @@ public class Cell3D
 {
 	public enum Face
 	{
-		Back(0),
-		Front(1),
-		Left(2),
-		Right(3),
-		Bottom(4),
-		Top(5);
+		Back(0, 1),
+		Front(1, 2),
+		Left(2, 4),
+		Right(3, 8),
+		Bottom(4, 16),
+		Top(5, 32);
 		
 		public int index;
+		public int bitmask;
 		
-		private Face(int index)
+		private Face(int index, int bitmask)
 		{
 			this.index = index;
+			this.bitmask = bitmask;
 		}
 	}
 	
 	public static final int VERTICES_PER_CELL = 36;
 	public static final int VERTICES_PER_FACE = 6;
 	
-	private Vertex[] vertices;
+	private Vertex[] vertices; //TODO Cell3D; At some point, remove colours from vertices (will save almost 50% memory).
 	/** If the planes are visible. */
 	private boolean[] visibleFaces;
 	private boolean visible;

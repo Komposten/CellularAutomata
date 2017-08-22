@@ -27,6 +27,12 @@ public class Vertex
 
 	public Vertex(float x, float y, float z, float u, float v, float r, float g, float b, float a)
 	{
+		set(x, y, z, u, v, r, g, b, a);
+	}
+	
+	
+	public void set(float x, float y, float z, float u, float v, float r, float g, float b, float a)
+	{
 		this.x = x;
 		this.y = y;
 		this.z = z;

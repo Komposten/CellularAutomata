@@ -17,6 +17,8 @@ import com.badlogic.gdx.math.Vector3;
 import komposten.automata.backend.Engine;
 import komposten.automata.backend.ShaderFactory;
 import komposten.automata.backend.rendering.g3d.GridMesh3D;
+import komposten.automata.backend.rendering.g3d.GridMesh3D2;
+import komposten.automata.backend.rendering.g3d.Cell3D.Face;
 
 
 public class Application extends ApplicationAdapter
@@ -27,7 +29,7 @@ public class Application extends ApplicationAdapter
 	
 	private BitmapFont font;
 	
-	private Engine engine;
+//	private Engine engine;
 	
 	private double timer;
 	private double gcTimer;
@@ -35,6 +37,7 @@ public class Application extends ApplicationAdapter
 	private boolean debug;
 	
 	private GridMesh3D mesh;
+	private GridMesh3D2 mesh2;
 	
 	@Override
 	public void create()
@@ -49,19 +52,26 @@ public class Application extends ApplicationAdapter
 		orthographicCamera.update();
 		
 		perspectiveCamera = new PerspectiveCamera(67, width, height);
-		perspectiveCamera.translate(150, 150, 0);
+		perspectiveCamera.translate(500, 1280, 500);
+		perspectiveCamera.lookAt(160, 1280, 160);
 		perspectiveCamera.near = 1f;
-		perspectiveCamera.far = 1000f;
+		perspectiveCamera.far = 3000f;
 		perspectiveCamera.update();
 		
 		ShaderFactory.initialise(orthographicCamera);
 		
-		engine = new Engine(width, height, orthographicCamera, perspectiveCamera);
+//		engine = new Engine(width, height, orthographicCamera, perspectiveCamera);
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		
 		System.out.println("Creating GridMesh3D...");
-		mesh = new GridMesh3D(10, 10, 10, 10);
+		long time = System.nanoTime();
+		mesh = new GridMesh3D(32, 256, 32, 10);
+		System.out.println((System.nanoTime() - time) / 1E9);
+		time = System.nanoTime();
+		mesh2 = new GridMesh3D2(32, 256, 32, 10);
+		System.out.println((System.nanoTime() - time) / 1E9);
+//		engine.togglePaused();
 		
 		Gdx.input.setInputProcessor(processor);
 	}
@@ -82,7 +92,7 @@ public class Application extends ApplicationAdapter
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT | GL30.GL_DEPTH_BUFFER_BIT);
 		
-		engine.update();
+//		engine.update();
 //		engine.render();
 
 		Gdx.gl.glEnable(GL30.GL_CULL_FACE);
@@ -90,7 +100,8 @@ public class Application extends ApplicationAdapter
 		ShaderProgram shader = ShaderFactory.getShader(ShaderFactory.DEFAULT_COLOR);
 		shader.begin();
 		shader.setUniformMatrix("u_projTrans", perspectiveCamera.combined);
-		mesh.getMesh().render(shader, GL30.GL_TRIANGLES);
+//		mesh.getMesh().render(shader, GL30.GL_TRIANGLES);
+		mesh2.getMesh().render(shader, GL30.GL_TRIANGLES);
 		shader.end();
 		Gdx.gl.glDisable(GL30.GL_CULL_FACE);
 		Gdx.gl.glDisable(GL30.GL_DEPTH_TEST);
@@ -99,12 +110,12 @@ public class Application extends ApplicationAdapter
 		batch.begin();
 		int x = 10;
 		int y = Gdx.graphics.getHeight() - 10;
-		font.draw(batch, "Automata: " + engine.getCurrentAutomata().getName(), x, y);
+//		font.draw(batch, "Automata: " + engine.getCurrentAutomata().getName(), x, y);
 		if (debug)
 		{
 			drawDebug(x, y - 30);
 		}
-		engine.renderText(font, batch);
+//		engine.renderText(font, batch);
 		batch.end();
 		
 		readInput();
@@ -175,7 +186,7 @@ public class Application extends ApplicationAdapter
 	@Override
 	public void dispose()
 	{
-		engine.dispose();
+//		engine.dispose();
 	}
 	
 	
@@ -220,7 +231,8 @@ public class Application extends ApplicationAdapter
 		
 		if (update)
 		{
-			perspectiveCamera.lookAt(mesh.getColumnCount()/2*mesh.getCellSize(), mesh.getRowCount()/2*mesh.getCellSize(), mesh.getLayerCount()/2*mesh.getCellSize());
+//			perspectiveCamera.lookAt(mesh.getColumnCount()/2*mesh.getCellSize(), mesh.getRowCount()/2*mesh.getCellSize(), mesh.getLayerCount()/2*mesh.getCellSize());
+			perspectiveCamera.lookAt(mesh2.getColumnCount()/2*mesh2.getCellSize(), mesh2.getRowCount()/2*mesh2.getCellSize(), mesh2.getLayerCount()/2*mesh2.getCellSize());
 			perspectiveCamera.update();
 		}
 	}
@@ -236,15 +248,15 @@ public class Application extends ApplicationAdapter
 				toggleDebug();
 				return true;
 			}
-			else if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.P)
-			{
-				engine.togglePaused();
-				return true;
-			}
-			else if (keycode >= Input.Keys.NUM_1 && keycode <= Input.Keys.NUM_9)
-			{
-				engine.setAutomataIndex(keycode - Input.Keys.NUM_1);
-			}
+//			else if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.P)
+//			{
+//				engine.togglePaused();
+//				return true;
+//			}
+//			else if (keycode >= Input.Keys.NUM_1 && keycode <= Input.Keys.NUM_9)
+//			{
+//				engine.setAutomataIndex(keycode - Input.Keys.NUM_1);
+//			}
 			
 			return false;
 		}

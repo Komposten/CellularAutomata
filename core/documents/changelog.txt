@@ -12,6 +12,8 @@
 - GridMesh3D now hides all Cell faces that are put against each other (visible neighbouring blocks).
 - GridMesh3D now uses a FloatArray object to store its vertices, to facilitate future removal and addition of vertices.
 - Added getCoordinates() to GridMesh3D.
+- Added GridMesh3D2 (GridMesh3D uses a Cell3D[] and a FloatArray to store data, GridMesh3D2 uses a HashMap<int, short[]>). Successfully reduced memory footprint by ~80-85% and sped up initialisation by 15 times.
+- Added bitmasks to Cell3D.Face.
 
 
 ================
