@@ -6,14 +6,36 @@ import komposten.automata.backend.rendering.Vertex;
 
 public class Cell3D
 {
+	public enum Face
+	{
+		Back(0),
+		Front(1),
+		Left(2),
+		Right(3),
+		Bottom(4),
+		Top(5);
+		
+		public int index;
+		
+		private Face(int index)
+		{
+			this.index = index;
+		}
+	}
+	
 	public static final int VERTICES_PER_CELL = 36;
+	public static final int VERTICES_PER_FACE = 6;
 	
 	private Vertex[] vertices;
+	/** If the planes are visible. */
+	private boolean[] visibleFaces;
 	private boolean visible;
 	
 	public Cell3D(float x, float y, float z, float size, Color color)
 	{
 		vertices = new Vertex[VERTICES_PER_CELL];
+		visibleFaces = new boolean[] { true, true, true, true, true, true };
+		visible = true;
 		
 		float red, green, blue;
 		float alpha = color.a;
@@ -83,6 +105,26 @@ public class Cell3D
 		vertices[33] = new Vertex(x+size, y+size, z+size, 1, 1, red, green, blue, alpha); //Upper front right
 		vertices[34] = new Vertex(x+size, y+size, z, 1, 0, red, green, blue, alpha); //Upper back right
 		vertices[35] = new Vertex(x, y+size, z+size, 0, 1, red, green, blue, alpha); //Upper front left
+	}
+	
+	
+	public void setFaceVisible(Face face, boolean visible)
+	{
+		this.visibleFaces[face.index] = visible;
+	}
+	
+	
+	public boolean isFaceVisible(Face face)
+	{
+		return visibleFaces[face.index];
+	}
+	
+	
+	public boolean isVertexVisible(int index)
+	{
+		int face = index / VERTICES_PER_FACE;
+		
+		return isFaceVisible(Face.values()[face]);
 	}
 	
 	
