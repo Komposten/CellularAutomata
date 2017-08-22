@@ -117,14 +117,11 @@ public class GridMesh3D implements Disposable
 			if (!cell.isVisible())
 				continue;
 			
-			int index = i * valuesPerCell;
-			
 			for (int j = 0; j < Cell3D.VERTICES_PER_CELL; j++)
 			{
 				if (!cell.isVertexVisible(j))
 					continue;
 				
-				int k = index + j*Vertex.VALUES_PER_VERTEX;
 				Vertex vertex = cell.getVertices()[j];
 				
 				floatArray.add(vertex.x);
@@ -183,10 +180,15 @@ public class GridMesh3D implements Disposable
 	}
 	
 	
-	public void setColor(Color color, int index)
+	private int[] temp = new int[3];
+	public int[] getCoordinates(int index)
 	{
-		cells[index].setColor(color);
-		//FIXME GridMesh3; After updating a cell, add it to a "dirty" list. When refreshMesh() is called, don't recreate the entire vertex array. Instead just locate the vertices of the dirty cells and update them (then call setVertices()).
+		temp[1] = index / (width * depth);
+		index -= (temp[1] * width * depth);
+		temp[2] = index / width;
+		temp[0] = index % width;
+		
+		return temp;
 	}
 	
 	
@@ -210,7 +212,8 @@ public class GridMesh3D implements Disposable
 	
 	public void updateCell(int index)
 	{
-		//TODO call updateCell(int, int, int)
+		int[] coords = getCoordinates(index);
+		updateCell(index, coords[0], coords[1], coords[2]);
 	}
 	
 	
@@ -284,12 +287,14 @@ public class GridMesh3D implements Disposable
 				cell.setFaceVisible(Face.Bottom, !cell.isVisible());
 			}
 		}
+		
+		//CURRENT Two cells have been updated. Somehow modify the FloatArray to reflect this.
 	}
 	
 	
 	public void refreshMesh()
 	{
-		createVertexArray();
+//		createVertexArray();
 //		updateFloatArray();
 		vertexArray = floatArray.toArray();
 		mesh.updateVertices(0, vertexArray);

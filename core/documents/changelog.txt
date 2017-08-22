@@ -11,6 +11,7 @@
 - Added cell and face visibility flags to Cell3D.
 - GridMesh3D now hides all Cell faces that are put against each other (visible neighbouring blocks).
 - GridMesh3D now uses a FloatArray object to store its vertices, to facilitate future removal and addition of vertices.
+- Added getCoordinates() to GridMesh3D.
 
 
 ================
