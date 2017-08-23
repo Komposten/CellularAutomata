@@ -21,7 +21,6 @@ public class GridMesh3D2 implements Disposable
 		public static final short Normal = 0;
 	}
 	
-	private static final int DATA_SIZE = 5;
 	private static final int TYPE = 0;
 	private static final int FACE_MASK = 1;
 	private static final int R = 2;
@@ -29,11 +28,9 @@ public class GridMesh3D2 implements Disposable
 	private static final int B = 4;
 	
 	private Mesh mesh;
-//	private Cell3D[] cells;
-//	private float[] vertexArray;
-//	private FloatArray floatArray;
 	private Map<Integer, short[]> cells;
-	
+	private FloatArray vertexArray = new FloatArray(); //TODO GridMesh3D2; For even less memory usage, fill a float[] directly. Set its size based on vertexCount (which is currently always 0, is there a fast, good-looking way to update it?).
+
 	private int cellCount;
 	private int vertexCount;
 	private int width; //X
@@ -42,11 +39,17 @@ public class GridMesh3D2 implements Disposable
 	private int cellSize;
 	
 	
-	public GridMesh3D2(int columns, int rows, int layers, int cellSize)
+	/**
+	 * @param width Width of the grid, measured in cells.
+	 * @param height Height of the grid, measured in cells.
+	 * @param depth Depth of the grid, measured in cells.
+	 * @param cellSize The size of a cell.
+	 */
+	public GridMesh3D2(int width, int height, int depth, int cellSize)
 	{
-		this.width = columns;
-		this.height = rows;
-		this.depth = layers;
+		this.width = width;
+		this.height = height;
+		this.depth = depth;
 		this.cellSize = cellSize;
 		this.cellCount = width * height * depth;
 		
@@ -58,8 +61,8 @@ public class GridMesh3D2 implements Disposable
 				|| byteCount > Integer.MAX_VALUE)
 		{
 			int maxCellCount = Integer.MAX_VALUE / Vertex.VERTEX_ATTRIBUTES.vertexSize / Cell3D.VERTICES_PER_CELL;
-			throw new IllegalArgumentException("Cannot create a grid of size [" + rows
-					+ "x" + columns + "x" + layers + "], it has too many cells ("
+			throw new IllegalArgumentException("Cannot create a grid of size [" + width
+					+ "x" + height + "x" + depth + "], it has too many cells ("
 					+ cellCountLong + ">" + maxCellCount + ")!");
 		}
 		
@@ -70,31 +73,18 @@ public class GridMesh3D2 implements Disposable
 
 	private void createCells()
 	{
-//		cells = new Cell3D[cellCount];
 		cells = new HashMap<>();
 
 		RandomXS128 random = new RandomXS128();
-		//Create cells.
+		
 		for (int x = 0; x < width; x++)
 		{
 			for (int y = 0; y < height; y++)
 			{
 				for (int z = 0; z < depth; z++)
 				{
-//					int index = getIndex(x, y, z);
-					
-//					float xPos = x * cellSize;
-//					float yPos = y * cellSize;
-//					float zPos = z * cellSize;
-					
 					Color colour = new Color(random.nextFloat(), random.nextFloat(), random.nextFloat(), 1);
 					addCell(CellType.Normal, colour, x, y, z);
-//					Cell3D cell = new Cell3D(xPos, yPos, zPos, cellSize, colour);
-					
-//					cells.put(index, createData(CellType.Normal, colour));
-//					cells[index] = cell;
-					
-//					updateCell(index, x, y, z);
 				}
 			}
 		}
@@ -121,23 +111,14 @@ public class GridMesh3D2 implements Disposable
 		
 		if (mesh == null)
 			mesh = new Mesh(false, true, getCellCount() * Cell3D.VERTICES_PER_CELL, 0, Vertex.VERTEX_ATTRIBUTES);
-		
 		mesh.setVertices(vertexArray);
 		
-		
-		System.out.println("Vertex objects: " + (cellCount * Cell3D.VERTICES_PER_CELL) + ", floats: " + vertexArray.length + ", in mesh: " + mesh.getNumVertices());
+//		System.out.println("Vertex objects: " + (cellCount * Cell3D.VERTICES_PER_CELL) + ", floats: " + vertexArray.length + ", in mesh: " + mesh.getNumVertices());
 	}
 	
 	
-	private FloatArray vertexArray = new FloatArray();
 	private float[] createVertexArray()
 	{
-//		int valuesPerCell = Cell3D.VERTICES_PER_CELL * Vertex.VALUES_PER_VERTEX;
-//		int maximumValues = cellCount * valuesPerCell;
-		
-//		floatArray = new FloatArray(maximumValues);
-//		float[] vertexArray = new float[vertexCount * Vertex.VALUES_PER_VERTEX];
-		
 		int vertexIndex = 0;
 		for (Entry<Integer, short[]> entry : cells.entrySet())
 		{
@@ -148,35 +129,6 @@ public class GridMesh3D2 implements Disposable
 			
 			vertexIndex = addVertices(data[FACE_MASK], coords[0], coords[1], coords[2], data[R], data[G], data[B], vertexArray, vertexIndex);
 		}
-		
-//		for (int i = 0; i < cells.size(); i++)
-//		{
-////			Cell3D cell = cells[i];
-//			int index = i * valuesPerCell;
-//			
-//			if (!cell.isVisible())
-//				continue;
-//			
-//			
-//			for (int j = 0; j < Cell3D.VERTICES_PER_CELL; j++)
-//			{
-//				if (!cell.isVertexVisible(j))
-//					continue;
-//
-//				int k = index + j*Vertex.VALUES_PER_VERTEX;
-//				Vertex vertex = cell.getVertices()[j];
-//
-//				vertexArray[k+0] = vertex.x;
-//				vertexArray[k+1] = vertex.y;
-//				vertexArray[k+2] = vertex.z;
-//				vertexArray[k+3] = vertex.u;
-//				vertexArray[k+4] = vertex.v;
-//				vertexArray[k+5] = vertex.r;
-//				vertexArray[k+6] = vertex.g;
-//				vertexArray[k+7] = vertex.b;
-//				vertexArray[k+8] = vertex.a;
-//			}
-//		}
 		
 		return vertexArray.toArray();
 	}
@@ -307,20 +259,29 @@ public class GridMesh3D2 implements Disposable
 		return mesh;
 	}
 	
-	
-	public int getColumnCount()
+
+	/**
+	 * @return The width of the grid, measured in cells.
+	 */
+	public int getWidth()
 	{
 		return width;
 	}
 	
-	
-	public int getRowCount()
+
+	/**
+	 * @return The height of the grid, measured in cells.
+	 */
+	public int getHeight()
 	{
 		return height;
 	}
 	
-	
-	public int getLayerCount()
+
+	/**
+	 * @return The depth of the grid, measured in cells.
+	 */
+	public int getDepth()
 	{
 		return depth;
 	}
@@ -331,7 +292,10 @@ public class GridMesh3D2 implements Disposable
 		return cellCount;
 	}
 	
-	
+
+	/**
+	 * @return The size of a cell.
+	 */
 	public int getCellSize()
 	{
 		return cellSize;
