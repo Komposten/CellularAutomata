@@ -28,7 +28,7 @@ public class Cell3D
 	public static final int VERTICES_PER_CELL = 36;
 	public static final int VERTICES_PER_FACE = 6;
 	
-	private Vertex[] vertices; //TODO Cell3D; At some point, remove colours from vertices (will save almost 50% memory).
+	private Vertex[] vertices;
 	/** If the planes are visible. */
 	private boolean[] visibleFaces;
 	private boolean visible;

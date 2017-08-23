@@ -288,7 +288,7 @@ public class GridMesh3D implements Disposable
 			}
 		}
 		
-		//CURRENT Two cells have been updated. Somehow modify the FloatArray to reflect this.
+		//TODO GridMesh3D; Two cells have been updated. Somehow modify the FloatArray to reflect this.
 	}
 	
 	
