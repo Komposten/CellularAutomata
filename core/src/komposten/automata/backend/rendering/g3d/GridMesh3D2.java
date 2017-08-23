@@ -43,8 +43,9 @@ public class GridMesh3D2 implements Disposable
 	 * @param height Height of the grid, measured in cells.
 	 * @param depth Depth of the grid, measured in cells.
 	 * @param cellSize The size of a cell.
+	 * @param fill If the grid should be empty (no vertices) or filled with cells.
 	 */
-	public GridMesh3D2(int width, int height, int depth, int cellSize)
+	public GridMesh3D2(int width, int height, int depth, int cellSize, boolean fill)
 	{
 		this.width = width;
 		this.height = height;
@@ -70,25 +71,28 @@ public class GridMesh3D2 implements Disposable
 					+ cellCountLong + ">" + maxCellCount + ")!");
 		}
 		
-		createCells();
+		createCells(fill);
 		createMesh();
 	}
 
 
-	private void createCells()
+	private void createCells(boolean fill)
 	{
 		cells = new HashMap<>();
 
-		RandomXS128 random = new RandomXS128();
-		
-		for (int x = 0; x < width; x++)
+		if (fill)
 		{
-			for (int y = 0; y < height; y++)
+			RandomXS128 random = new RandomXS128();
+			
+			for (int x = 0; x < width; x++)
 			{
-				for (int z = 0; z < depth; z++)
+				for (int y = 0; y < height; y++)
 				{
-					Color colour = new Color(random.nextFloat(), random.nextFloat(), random.nextFloat(), 1);
-					addCell(CellType.Normal, colour, x, y, z);
+					for (int z = 0; z < depth; z++)
+					{
+						Color colour = new Color(random.nextFloat(), random.nextFloat(), random.nextFloat(), 1);
+						addCell(CellType.Normal, colour, x, y, z);
+					}
 				}
 			}
 		}

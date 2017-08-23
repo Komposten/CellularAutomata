@@ -38,7 +38,7 @@ public class PredatorPrey3D extends Automaton
 	{
 		super("PredatorPrey");
 		this.batch = batch;
-		mesh = new GridMesh3D2(width, height, depth, CELL_SIZE);
+		mesh = new GridMesh3D2(width, height, depth, CELL_SIZE, false);
 		random = new RandomXS128();
 		
 		organisms = new Organism[mesh.getCellCount()];

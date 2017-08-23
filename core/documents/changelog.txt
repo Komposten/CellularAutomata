@@ -9,6 +9,7 @@
 - Slight optimisation of memory and speed of GridMesh3D2 and VertexFactory.
 - Added hasCell() and as well as "index versions" of add/remove/updateCell.
 - Added PredatorPrey3D (currently implemented in Application rather than Engine).
+- It is now possible to choose whether or not GridMesh3D2 should be filled with cells from the start.
 
 
 ================
