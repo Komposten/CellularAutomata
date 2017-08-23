@@ -6,6 +6,8 @@
 - Added a Face enum to VertexFactory (to avoid dependencies to Cell3D).
 - GridMesh3D2.updateCell(int, int, int, int) now properly handles addition, removal and updating of cells.
 - Added normals to VertexFactory.
+- Slight optimisation of memory and speed of GridMesh3D2 and VertexFactory.
+- Added hasCell() and as well as "index versions" of add/remove/updateCell.
 
 
 ================

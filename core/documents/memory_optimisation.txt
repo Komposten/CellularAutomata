@@ -47,7 +47,7 @@ Memory for option 2:
 
 Memory for option 3:
 - map.int[262144] = 3 145 728 //key references and values
-- map.byte[262144*6] = 3 670 016 //value references and values
+- map.short[262144*6] = 5 242 880 //value references and values
 - float[42 467 328] = 169 869 312 //vertex array
 - Total: 176 685 056
 - Estimated savings: 81%

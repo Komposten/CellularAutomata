@@ -28,7 +28,7 @@ public class GridMesh3D2 implements Disposable
 	
 	private Mesh mesh;
 	private Map<Integer, short[]> cells;
-	private FloatArray vertexArray = new FloatArray(); //TODO GridMesh3D2; For even less memory and cpu usage, fill a float[] directly. Set its size based on vertexCount (which is currently always 0, is there a fast, good-looking way to update it?).
+	private FloatArray vertexArray; //TODO GridMesh3D2; For even less memory and cpu usage, fill a float[] directly. Set its size based on vertexCount (which is currently always 0, is there a fast, good-looking way to update it?).
 
 	private int cellCount;
 	private int vertexCount;
@@ -51,6 +51,11 @@ public class GridMesh3D2 implements Disposable
 		this.depth = depth;
 		this.cellSize = cellSize;
 		this.cellCount = width * height * depth;
+		
+		//Set the capacity to the maximum amount of float values divided by 2, since that is
+		//theoretical maximum number of floats due to "face hiding" (removing vertices for hidden faces, see updateFaces()).
+		int capacity = cellCount * VertexFactory.VERTICES_PER_CELL * VertexFactory.VALUES_PER_VERTEX / 2 + 1;
+		vertexArray = new FloatArray(capacity);
 		
 		long cellCountLong = (long)width * (long)height * depth;
 		long vertexCount = cellCountLong * VertexFactory.VERTICES_PER_CELL;
@@ -119,6 +124,7 @@ public class GridMesh3D2 implements Disposable
 			int index = entry.getKey();
 			short[] data = entry.getValue();
 			int[] coords = getCoordinates(index);
+			//NEXT_TASK GridMesh3D2; Consider using the XYZ as key instead of index. Its faster to convert XYZ->index than vice versa.
 			
 			vertexIndex = VertexFactory.addFaces(data[FACE_MASK], coords[0], coords[1], coords[2], cellSize, data[R], data[G], data[B], vertexArray, vertexIndex);
 		}
@@ -198,13 +204,26 @@ public class GridMesh3D2 implements Disposable
 		int index = getIndex(x, y, z);
 		short[] data = createData(cellType, color);
 		cells.put(index, data);
-		updateCell(index, x, y, z);
+		updateCellFaces(index, x, y, z);
 	}
 
 
 	private short[] createData(short cellType, Color color)
 	{
+		//NEXT_TASK GridMesh3D2; Consider switching to float to avoid color conversion calculations (faster, but more RAM).
 		return new short[] { cellType, 0, (short) (color.r*255), (short) (color.g*255), (short) (color.b*255) };
+	}
+	
+	
+	public boolean hasCell(int index)
+	{
+		return cells.containsKey(index);
+	}
+	
+	
+	public boolean hasCell(int x, int y, int z)
+	{
+		return cells.containsKey(getIndex(x, y, z));
 	}
 	
 	
@@ -212,6 +231,12 @@ public class GridMesh3D2 implements Disposable
 	{
 		int index = getIndex(x, y, z);
 		
+		updateCell(cellType, color, index);
+	}
+	
+	
+	public void updateCell(short cellType, Color color, int index)
+	{
 		if (cells.containsKey(index))
 		{
 			short[] data = cells.get(index);
@@ -220,8 +245,15 @@ public class GridMesh3D2 implements Disposable
 			data[R] = (short) (color.r * 255);
 			data[G] = (short) (color.g * 255);
 			data[B] = (short) (color.b * 255);
-			updateCell(index, x, y, z);
 		}
+	}
+	
+	
+	public void removeCell(int index)
+	{
+		int[] coords = getCoordinates(index);
+		
+		removeCell(index, coords[0], coords[1], coords[2]);
 	}
 	
 	
@@ -229,16 +261,22 @@ public class GridMesh3D2 implements Disposable
 	{
 		int index = getIndex(x, y, z);
 		
+		removeCell(index, x, y, z);
+	}
+
+
+	private void removeCell(int index, int x, int y, int z)
+	{
 		if (cells.remove(index) == null)
 		{
 			return;
 		}
 		
-		updateCell(index, x, y, z);
+		updateCellFaces(index, x, y, z);
 	}
 	
 	
-	private void updateCell(int index, int x, int y, int z)
+	private void updateCellFaces(int index, int x, int y, int z)
 	{
 		short[] cell = cells.get(index);
 		short[] adjacent = null;

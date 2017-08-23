@@ -63,6 +63,10 @@ public class VertexFactory
 		float y = cellY * cellSize;
 		float z = cellZ * cellSize;
 		
+		float x2 = x+cellSize;
+		float y2 = y+cellSize;
+		float z2 = z+cellSize;
+		
 		float red = r/255f;
 		float green = g/255f;
 		float blue = b/255f;
@@ -75,23 +79,23 @@ public class VertexFactory
 		{
 			nx = ny = nz = 0;
 			nz = 1;
-			offset = addVertex(x, y, z+cellSize, 0, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y, z+cellSize, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x, y+cellSize, z+cellSize, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y+cellSize, z+cellSize, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x, y+cellSize, z+cellSize, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y, z+cellSize, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x, y, z2, 0, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y, z2, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x, y2, z2, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y2, z2, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x, y2, z2, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y, z2, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
 		}
 		
 		if ((faces & Face.Back.bitmask) != 0)
 		{
 			nx = ny = nz = 0;
 			nz = -1;
-			offset = addVertex(x, y+cellSize, z, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y+cellSize, z, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y, z, 0, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x, y+cellSize, z, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y, z, 0, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x, y2, z, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y2, z, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y, z, 0, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x, y2, z, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y, z, 0, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
 			offset = addVertex(x, y, z, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
 		}
 		
@@ -99,11 +103,11 @@ public class VertexFactory
 		{
 			nx = ny = nz = 0;
 			nx = -1;
-			offset = addVertex(x, y+cellSize, z+cellSize, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x, y2, z2, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
 			offset = addVertex(x, y, z, 0, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x, y, z+cellSize, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x, y+cellSize, z+cellSize, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x, y+cellSize, z, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x, y, z2, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x, y2, z2, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x, y2, z, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
 			offset = addVertex(x, y, z, 0, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
 		}
 		
@@ -111,24 +115,24 @@ public class VertexFactory
 		{
 			nx = ny = nz = 0;
 			nx = 1;
-			offset = addVertex(x+cellSize, y+cellSize, z, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y+cellSize, z+cellSize, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y, z, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y, z+cellSize, 0, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y, z, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y+cellSize, z+cellSize, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y2, z, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y2, z2, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y, z, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y, z2, 0, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y, z, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y2, z2, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
 		}
 		
 		if ((faces & Face.Top.bitmask) != 0)
 		{
 			nx = ny = nz = 0;
 			ny = 1;
-			offset = addVertex(x, y+cellSize, z, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x, y+cellSize, z+cellSize, 0, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y+cellSize, z, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y+cellSize, z+cellSize, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y+cellSize, z, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x, y+cellSize, z+cellSize, 0, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x, y2, z, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x, y2, z2, 0, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y2, z, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y2, z2, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y2, z, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x, y2, z2, 0, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
 		}
 		
 		if ((faces & Face.Bottom.bitmask) != 0)
@@ -136,11 +140,11 @@ public class VertexFactory
 			nx = ny = nz = 0;
 			ny = -1;
 			offset = addVertex(x, y, z, 0, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y, z, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x, y, z+cellSize, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y, z+cellSize, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x, y, z+cellSize, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
-			offset = addVertex(x+cellSize, y, z, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y, z, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x, y, z2, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y, z2, 1, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x, y, z2, 0, 0, red, green, blue, vertexArray, offset, nx, ny, nz);
+			offset = addVertex(x2, y, z, 1, 1, red, green, blue, vertexArray, offset, nx, ny, nz);
 		}
 		
 		
