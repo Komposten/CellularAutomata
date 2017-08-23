@@ -15,7 +15,7 @@ import komposten.automata.backend.rendering.g3d.VertexFactory.Face;
 
 public class GridMesh3D2 implements Disposable
 {
-	private static class CellType
+	public static class CellType
 	{
 		public static final short Normal = 0;
 	}
@@ -28,7 +28,7 @@ public class GridMesh3D2 implements Disposable
 	
 	private Mesh mesh;
 	private Map<Integer, short[]> cells;
-	private FloatArray vertexArray = new FloatArray(); //TODO GridMesh3D2; For even less memory usage, fill a float[] directly. Set its size based on vertexCount (which is currently always 0, is there a fast, good-looking way to update it?).
+	private FloatArray vertexArray = new FloatArray(); //TODO GridMesh3D2; For even less memory and cpu usage, fill a float[] directly. Set its size based on vertexCount (which is currently always 0, is there a fast, good-looking way to update it?).
 
 	private int cellCount;
 	private int vertexCount;
@@ -112,6 +112,7 @@ public class GridMesh3D2 implements Disposable
 	
 	private float[] createVertexArray()
 	{
+		vertexArray.clear();
 		int vertexIndex = 0;
 		for (Entry<Integer, short[]> entry : cells.entrySet())
 		{
@@ -227,128 +228,64 @@ public class GridMesh3D2 implements Disposable
 	public void removeCell(int x, int y, int z)
 	{
 		int index = getIndex(x, y, z);
-		cells.remove(index);
-		updateCell(index, x, y, z); //TODO In updateCell() (or a new method), tell existing neighbours that we have deleted [x, y, z].
+		
+		if (cells.remove(index) == null)
+		{
+			return;
+		}
+		
+		updateCell(index, x, y, z);
 	}
 	
 	
-	public void updateCell(int index, int x, int y, int z)
+	private void updateCell(int index, int x, int y, int z)
 	{
 		short[] cell = cells.get(index);
 		short[] adjacent = null;
 		
 		//Right neighbour
-		if (x+1 < width)
-		{
-			adjacent = cells.get(getIndex(x+1, y, z));
-			if (adjacent != null)
-			{
-				adjacent[FACE_MASK] &= ~Face.Left.bitmask;
-				cell[FACE_MASK] &= ~Face.Right.bitmask;
-			}
-			else
-			{
-				cell[FACE_MASK] |= Face.Right.bitmask;
-			}
-		}
-		else
-		{
-			cell[FACE_MASK] |= Face.Right.bitmask;
-		}
+		adjacent = (x+1 < width) ? cells.get(getIndex(x+1, y, z)) : null;
+		updateFaces(cell, Face.Right, adjacent, Face.Left);
 		
 		//Left neighbour
-		if (x-1 >= 0)
-		{
-			adjacent = cells.get(getIndex(x-1, y, z));
-			if (adjacent != null)
-			{
-				adjacent[FACE_MASK] &= ~Face.Right.bitmask;
-				cell[FACE_MASK] &= ~Face.Left.bitmask;
-			}
-			else
-			{
-				cell[FACE_MASK] |= Face.Left.bitmask;
-			}
-		}
-		else
-		{
-			cell[FACE_MASK] |= Face.Left.bitmask;
-		}
+		adjacent = (x-1 >= 0) ? cells.get(getIndex(x-1, y, z)) : null;
+		updateFaces(cell, Face.Left, adjacent, Face.Right);
 		
 		//Front neighbour
-		if (z+1 < depth)
-		{
-			adjacent = cells.get(getIndex(x, y, z+1));
-			if (adjacent != null)
-			{
-				adjacent[FACE_MASK] &= ~Face.Back.bitmask;
-				cell[FACE_MASK] &= ~Face.Front.bitmask;
-			}
-			else
-			{
-				cell[FACE_MASK] |= Face.Front.bitmask;
-			}
-		}
-		else
-		{
-			cell[FACE_MASK] |= Face.Front.bitmask;
-		}
+		adjacent = (z+1 < depth) ? cells.get(getIndex(x, y, z+1)) : null;
+		updateFaces(cell, Face.Front, adjacent, Face.Back);
 		
 		//Back neighbour
-		if (z-1 >= 0)
-		{
-			adjacent = cells.get(getIndex(x, y, z-1));
-			if (adjacent != null)
-			{
-				adjacent[FACE_MASK] &= ~Face.Front.bitmask;
-				cell[FACE_MASK] &= ~Face.Back.bitmask;
-			}
-			else
-			{
-				cell[FACE_MASK] |= Face.Back.bitmask;
-			}
-		}
-		else
-		{
-			cell[FACE_MASK] |= Face.Back.bitmask;
-		}
+		adjacent = (z-1 >= 0) ? cells.get(getIndex(x, y, z-1)) : null;
+		updateFaces(cell, Face.Back, adjacent, Face.Front);
 		
 		//Top neighbour
-		if (y+1 < height)
-		{
-			adjacent = cells.get(getIndex(x, y+1, z));
-			if (adjacent != null)
-			{
-				adjacent[FACE_MASK] &= ~Face.Bottom.bitmask;
-				cell[FACE_MASK] &= ~Face.Top.bitmask;
-			}
-			else
-			{
-				cell[FACE_MASK] |= Face.Top.bitmask;
-			}
-		}
-		else
-		{
-			cell[FACE_MASK] |= Face.Top.bitmask;
-		}
+		adjacent = (y+1 < height) ? cells.get(getIndex(x, y+1, z)) : null;
+		updateFaces(cell, Face.Top, adjacent, Face.Bottom);
 		
 		//Bottom neighbour
-		if (y-1 >= 0)
+		adjacent = (y-1 >= 0) ? cells.get(getIndex(x, y-1, z)) : null;
+		updateFaces(cell, Face.Bottom, adjacent, Face.Top);
+	}
+	
+	
+	private void updateFaces(short[] cell, Face cellFace, short[] adjacent, Face adjacentFace)
+	{
+		if (adjacent != null)
 		{
-			adjacent = cells.get(getIndex(x, y-1, z));
-			if (adjacent != null)
+			if (cell != null)
 			{
-				adjacent[FACE_MASK] &= ~Face.Top.bitmask;
-				cell[FACE_MASK] &= ~Face.Bottom.bitmask;
+				adjacent[FACE_MASK] &= ~adjacentFace.bitmask;
+				cell[FACE_MASK] &= ~cellFace.bitmask;
 			}
 			else
 			{
-				cell[FACE_MASK] |= Face.Bottom.bitmask;
+				adjacent[FACE_MASK] |= adjacentFace.bitmask;
 			}
 		}
-		else
+		else if (cell != null)
 		{
-			cell[FACE_MASK] |= Face.Bottom.bitmask;
+			cell[FACE_MASK] |= cellFace.bitmask;
 		}
 	}
 	
