@@ -10,15 +10,16 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.Renderable;
+import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.profiling.GL30Profiler;
 import com.badlogic.gdx.math.Vector3;
 
-import komposten.automata.backend.Engine;
 import komposten.automata.backend.ShaderFactory;
 import komposten.automata.backend.rendering.g3d.GridMesh3D;
 import komposten.automata.backend.rendering.g3d.GridMesh3D2;
-import komposten.automata.backend.rendering.g3d.Cell3D.Face;
+import komposten.automata.predatorprey3d.PredatorPrey3D;
 
 
 public class Application extends ApplicationAdapter
@@ -38,6 +39,10 @@ public class Application extends ApplicationAdapter
 	
 	private GridMesh3D mesh;
 	private GridMesh3D2 mesh2;
+	private PredatorPrey3D pp3d;
+	private Renderable meshRenderable;
+	private ModelBatch modelBatch;
+	private Shader shader;
 	
 	@Override
 	public void create()
@@ -52,8 +57,8 @@ public class Application extends ApplicationAdapter
 		orthographicCamera.update();
 		
 		perspectiveCamera = new PerspectiveCamera(67, width, height);
-		perspectiveCamera.translate(500, 1280, 500);
-		perspectiveCamera.lookAt(160, 1280, 160);
+		perspectiveCamera.translate(25, 25, 80);
+		perspectiveCamera.lookAt(25, 25, 25);
 		perspectiveCamera.near = 1f;
 		perspectiveCamera.far = 3000f;
 		perspectiveCamera.update();
@@ -63,20 +68,28 @@ public class Application extends ApplicationAdapter
 //		engine = new Engine(width, height, orthographicCamera, perspectiveCamera);
 		batch = new SpriteBatch();
 		font = new BitmapFont();
+		modelBatch = new ModelBatch();
+		pp3d = new PredatorPrey3D(50, 50, 50, modelBatch);
 		
-		System.out.println("Creating GridMesh3D...");
-		long time = System.nanoTime();
-		mesh = new GridMesh3D(32, 256, 32, 10);
-		System.out.println((System.nanoTime() - time) / 1E9);
-		time = System.nanoTime();
-		mesh2 = new GridMesh3D2(32, 256, 32, 10);
-		System.out.println((System.nanoTime() - time) / 1E9);
-//		engine.togglePaused();
+//		System.out.println("Creating GridMesh3D...");
+//		mesh2 = new GridMesh3D2(32, 32, 32, 10);
+//		
+//		Material material = new Material("cell_material", ColorAttribute.createDiffuse(Color.PINK));
+//		meshRenderable = new Renderable();
+//		meshRenderable.material = material;
+//		meshRenderable.worldTransform.idt();
+//		meshRenderable.environment = new Environment();
+//		meshRenderable.environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+//		meshRenderable.environment.add(new DirectionalLight().set(Color.WHITE, new Vector3(0, -.2f, -1)));
+//		meshRenderable.meshPart.set("cells", mesh2.getMesh(), 0, mesh2.getMesh().getNumVertices(), GL30.GL_TRIANGLES);
+//		shader = new DefaultShader(meshRenderable);
+//		shader.init();
 		
 		Gdx.input.setInputProcessor(processor);
 	}
 
 
+	int counter = 0;
 	@Override
 	public void render()
 	{
@@ -97,12 +110,24 @@ public class Application extends ApplicationAdapter
 
 		Gdx.gl.glEnable(GL30.GL_CULL_FACE);
 		Gdx.gl.glEnable(GL30.GL_DEPTH_TEST);
-		ShaderProgram shader = ShaderFactory.getShader(ShaderFactory.DEFAULT_COLOR);
-		shader.begin();
-		shader.setUniformMatrix("u_projTrans", perspectiveCamera.combined);
-//		mesh.getMesh().render(shader, GL30.GL_TRIANGLES);
-		mesh2.getMesh().render(shader, GL30.GL_TRIANGLES);
-		shader.end();
+//		ShaderProgram shader = ShaderFactory.getShader(ShaderFactory.DEFAULT_COLOR);
+//		shader.begin();
+//		shader.setUniformMatrix("u_projTrans", perspectiveCamera.combined);
+////		mesh.getMesh().render(shader, GL30.GL_TRIANGLES);
+//		mesh2.getMesh().render(shader, GL30.GL_TRIANGLES);
+//		shader.end();
+		if (counter % 2 == 0)
+			pp3d.update();
+		counter++;
+		modelBatch.begin(perspectiveCamera);
+		pp3d.render();
+//		modelBatch.render(meshRenderable);
+		modelBatch.end();
+//		context.begin();
+//		shader.begin(perspectiveCamera, context);
+//		shader.render(meshRenderable);
+//		shader.end();
+//		context.end();
 		Gdx.gl.glDisable(GL30.GL_CULL_FACE);
 		Gdx.gl.glDisable(GL30.GL_DEPTH_TEST);
 		
@@ -111,6 +136,7 @@ public class Application extends ApplicationAdapter
 		int x = 10;
 		int y = Gdx.graphics.getHeight() - 10;
 //		font.draw(batch, "Automata: " + engine.getCurrentAutomata().getName(), x, y);
+		pp3d.renderText(font, batch);
 		if (debug)
 		{
 			drawDebug(x, y - 30);
@@ -232,7 +258,8 @@ public class Application extends ApplicationAdapter
 		if (update)
 		{
 //			perspectiveCamera.lookAt(mesh.getColumnCount()/2*mesh.getCellSize(), mesh.getRowCount()/2*mesh.getCellSize(), mesh.getLayerCount()/2*mesh.getCellSize());
-			perspectiveCamera.lookAt(mesh2.getColumnCount()/2*mesh2.getCellSize(), mesh2.getRowCount()/2*mesh2.getCellSize(), mesh2.getLayerCount()/2*mesh2.getCellSize());
+//			perspectiveCamera.lookAt(mesh2.getWidth()/2*mesh2.getCellSize(), mesh2.getHeight()/2*mesh2.getCellSize(), mesh2.getDepth()/2*mesh2.getCellSize());
+			perspectiveCamera.lookAt(25, 25, 25);
 			perspectiveCamera.update();
 		}
 	}
@@ -247,6 +274,10 @@ public class Application extends ApplicationAdapter
 			{
 				toggleDebug();
 				return true;
+			}
+			else if (keycode == Input.Keys.ESCAPE)
+			{
+				Gdx.app.exit();
 			}
 //			else if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.P)
 //			{

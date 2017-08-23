@@ -8,6 +8,7 @@
 - Added normals to VertexFactory.
 - Slight optimisation of memory and speed of GridMesh3D2 and VertexFactory.
 - Added hasCell() and as well as "index versions" of add/remove/updateCell.
+- Added PredatorPrey3D (currently implemented in Application rather than Engine).
 
 
 ================
