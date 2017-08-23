@@ -5,6 +5,7 @@
 - Added VALUES_PER_VERTEX, VERTICES_PER_FACE, FACES_PER_CELL, VERTICES_PER_CELL and VERTEX_ATTRIBUTES to VertexFactory (to avoid dependencies to Cell3D and Vertex).
 - Added a Face enum to VertexFactory (to avoid dependencies to Cell3D).
 - GridMesh3D2.updateCell(int, int, int, int) now properly handles addition, removal and updating of cells.
+- Added normals to VertexFactory.
 
 
 ================
