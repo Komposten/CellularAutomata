@@ -1,4 +1,12 @@
 ================
+** 2017-08-23 **
+================
+- Moved addVertices() and addVertex() from GridMesh3D2 to a new class called VertexFactory. Also renamed addVertices() to addFaces().
+- Added VALUES_PER_VERTEX, VERTICES_PER_FACE, FACES_PER_CELL, VERTICES_PER_CELL and VERTEX_ATTRIBUTES to VertexFactory (to avoid dependencies to Cell3D and Vertex).
+- Added a Face enum to VertexFactory (to avoid dependencies to Cell3D).
+
+
+================
 ** 2017-08-22 **
 ================
 - Application now enables GL_CULL_FACE and GL_DEPTH_TEST before drawing the GridMesh3D, and disables them afterwards.
