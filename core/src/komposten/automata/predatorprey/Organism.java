@@ -3,7 +3,7 @@ package komposten.automata.predatorprey;
 import com.badlogic.gdx.graphics.Color;
 
 
-class Organism
+public class Organism
 {
 	public static final int MAX_HEALTH = 100;
 	private static final int START_HEALTH = 10;
@@ -33,7 +33,7 @@ class Organism
 	{
 		this.type = type;
 		health = START_HEALTH;
-		color = new Color(0, 0, 0, 1);
+		color = new Color(0, 0, 0, 1).set(type.color);
 		
 		dirty = false;
 	}
