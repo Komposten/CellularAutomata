@@ -162,9 +162,24 @@ public class Application extends ApplicationAdapter
 	}
 
 
+	int fpsMin = Integer.MAX_VALUE;
+	int fpsMax = 0;
+	long fpsAvg = 0;
+	long fpsSum = 0;
+	long fpsValues = 0;
 	private void drawDebug(int x, int y)
 	{
-		String fps = "FPS: " + Gdx.graphics.getFramesPerSecond();
+		int currentFps = Gdx.graphics.getFramesPerSecond();
+		if (currentFps > 0)
+		{
+			fpsMin = Math.min(fpsMin, currentFps);
+			fpsMax = Math.max(fpsMax, currentFps);
+			fpsSum += currentFps;
+			fpsValues += 1;
+			fpsAvg = fpsSum / fpsValues;
+		}
+		
+		String fps = "FPS: " + currentFps + ", Min: " + fpsMin + ", Max: " + fpsMax + ", Avg: " + fpsAvg;
 		String drawCalls = "Draw calls: " + GL30Profiler.drawCalls;
 		String shaderSwitches = "Shader switches: " + GL30Profiler.shaderSwitches;
 		String textureBinds = "Texture bindings: " + GL30Profiler.textureBindings;

@@ -2,6 +2,8 @@
 ** 2017-08-24 **
 ================
 - GridMesh3D2 now uses Coordinate objects as keys to the cells map instead of Integers (slightly higher .equals()/.hashCode() time), but reduces need of getIndex().
+- Min, max and avg fps are now also shown in debug mode.
+
 
 ================
 ** 2017-08-23 **
