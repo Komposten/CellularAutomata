@@ -3,6 +3,9 @@
 ================
 - GridMesh3D2 now uses Coordinate objects as keys to the cells map instead of Integers (slightly higher .equals()/.hashCode() time), but reduces need of getIndex().
 - Min, max and avg fps are now also shown in debug mode.
+- GridMesh3D2 now pre-calculates its vertices (again) and stores them in the HashMap. (= could get rid of the always-max-size FloatArray.)
+- Removal and addition of cells now set an "isDirty" flag to tell refreshMesh() to run createVertexArray().
+- Updating cells (e.g. changing type or colour) will update the values in the existing vertex array without having to recreate it.
 
 
 ================

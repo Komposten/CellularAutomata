@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.FloatArray;
 
 import komposten.automata.backend.rendering.g3d.VertexFactory.Face;
 
@@ -69,23 +68,20 @@ public class GridMesh3D2 implements Disposable
 		}
 	}
 	
-	private static final int TYPE = 0;
-	private static final int FACE_MASK = 1;
-	private static final int R = 2;
-	private static final int G = 3;
-	private static final int B = 4;
-	
 	private Mesh mesh;
-	private Map<Coordinate, short[]> cells;
-	private FloatArray vertexArray; //TODO GridMesh3D2; For even less memory and cpu usage, fill a float[] directly. Set its size based on vertexCount (which is currently always 0, is there a fast, good-looking way to update it?).
+	private Map<Coordinate, CellData> cells;
+	private float[] vertexArray;
 	private Coordinate vector = new Coordinate();
 
 	private int cellCount;
-	private int vertexCount;
+	private int faceCount;
 	private int width; //X
 	private int height; //Y
 	private int depth; //Z
 	private int cellSize;
+	
+	/** True if the vertex array should be re-created. */
+	private boolean isDirty;
 	
 	
 	/**
@@ -102,11 +98,6 @@ public class GridMesh3D2 implements Disposable
 		this.depth = depth;
 		this.cellSize = cellSize;
 		this.cellCount = width * height * depth;
-		
-		//Set the capacity to the maximum amount of float values divided by 2, since that is
-		//theoretical maximum number of floats due to "face hiding" (removing vertices for hidden faces, see updateFaces()).
-		int capacity = cellCount * VertexFactory.VERTICES_PER_CELL * VertexFactory.VALUES_PER_VERTEX / 2 + 1;
-		vertexArray = new FloatArray(capacity);
 		
 		long cellCountLong = (long)width * (long)height * depth;
 		long vertexCount = cellCountLong * VertexFactory.VERTICES_PER_CELL;
@@ -171,17 +162,31 @@ public class GridMesh3D2 implements Disposable
 	
 	private float[] createVertexArray()
 	{
-		vertexArray.clear();
-		int vertexIndex = 0;
-		for (Entry<Coordinate, short[]> entry : cells.entrySet())
+		int index = 0;
+		vertexArray = new float[faceCount * VertexFactory.VERTICES_PER_FACE * VertexFactory.VALUES_PER_VERTEX];
+
+		for (Entry<Coordinate, CellData> entry : cells.entrySet())
 		{
 			Coordinate coords = entry.getKey();
-			short[] data = entry.getValue();
+			CellData data = entry.getValue();
 			
-			vertexIndex = VertexFactory.addFaces(data[FACE_MASK], coords.x, coords.y, coords.z, cellSize, data[R], data[G], data[B], vertexArray, vertexIndex);
+			if (data.vertexData == null)
+			{
+				data.updateVertices(coords.x, coords.y, coords.z, cellSize);
+			}
+			
+			data.index = index;
+			
+			for (float f : data.vertexData)
+			{
+				vertexArray[index] = f;
+				index++;
+			}
 		}
 		
-		return vertexArray.toArray();
+		isDirty = false;
+		
+		return vertexArray;
 	}
 	
 	
@@ -251,19 +256,41 @@ public class GridMesh3D2 implements Disposable
 	}
 	
 	
-	public void addCell(short cellType, Color color, int x, int y, int z)
+	/**
+	 * Adds a cell to the mesh at the specified coordinates, unless such a cell
+	 * already exists.
+	 * 
+	 * @return <code>false</code> if a cell already existed at the specified
+	 *         coordinates, <code>true</code> if a cell was added.
+	 */
+	public boolean addCell(short cellType, Color color, int x, int y, int z)
 	{
+		if (cells.containsKey(vector.set(x, y, z)))
+		{
+			return false;
+		}
+		
 		Coordinate coords = new Coordinate(x, y, z);
-		short[] data = createData(cellType, color);
+		CellData data = createData(cellType, color);
 		cells.put(coords, data);
 		updateCellFaces(x, y, z);
+		isDirty = true;
+		return true;
 	}
 
 
-	private short[] createData(short cellType, Color color)
+	private CellData createData(short cellType, Color color)
 	{
 		//NEXT_TASK GridMesh3D2; Consider switching to float to avoid color conversion calculations (faster, but more RAM).
-		return new short[] { cellType, 0, (short) (color.r*255), (short) (color.g*255), (short) (color.b*255) };
+		CellData data = new CellData();
+		data.type = cellType;
+		data.faceMask = 0;
+		data.index = 0;
+		data.r = (short) (color.r * 255);
+		data.g = (short) (color.g * 255);
+		data.b = (short) (color.b * 255);
+		
+		return data;
 	}
 	
 	
@@ -273,24 +300,27 @@ public class GridMesh3D2 implements Disposable
 	}
 	
 	
-	public void updateCell(short cellType, Color color, int x, int y, int z)
-	{
-		if (cells.containsKey(vector.set(x, y, z)))
-		{
-			short[] data = cells.get(vector);
-
-			data[TYPE] = cellType;
-			data[R] = (short) (color.r * 255);
-			data[G] = (short) (color.g * 255);
-			data[B] = (short) (color.b * 255);
-		}
-	}
-	
-	
 	public void updateCell(short cellType, Color color, int index)
 	{
 		int[] coords = getCoordinates(index);
 		updateCell(cellType, color, coords[0], coords[1], coords[2]);
+	}
+	
+	
+	public void updateCell(short cellType, Color color, int x, int y, int z)
+	{
+		if (cells.containsKey(vector.set(x, y, z)))
+		{
+			CellData data = cells.get(vector);
+
+			data.type = cellType;
+			data.setColor(color);
+			
+			if (!isDirty)
+			{
+				VertexFactory.updateColors(data.faceMask, data.r, data.g, data.b, vertexArray, data.index);
+			}
+		}
 	}
 	
 	
@@ -310,13 +340,14 @@ public class GridMesh3D2 implements Disposable
 		}
 		
 		updateCellFaces(x, y, z);
+		isDirty = true;
 	}
 	
 	
 	private void updateCellFaces(int x, int y, int z)
 	{
-		short[] cell = cells.get(vector.set(x, y, z));
-		short[] adjacent = null;
+		CellData cell = cells.get(vector.set(x, y, z));
+		CellData adjacent = null;
 		
 		//Right neighbour
 		adjacent = (x+1 < width) ? cells.get(vector.set(x+1, y, z)) : null;
@@ -344,30 +375,47 @@ public class GridMesh3D2 implements Disposable
 	}
 	
 	
-	private void updateFaces(short[] cell, Face cellFace, short[] adjacent, Face adjacentFace)
+	private void updateFaces(CellData cell, Face cellFace, CellData adjacent, Face adjacentFace)
 	{
 		if (adjacent != null)
 		{
 			if (cell != null)
 			{
-				adjacent[FACE_MASK] &= ~adjacentFace.bitmask;
-				cell[FACE_MASK] &= ~cellFace.bitmask;
+				adjacent.faceMask &= ~adjacentFace.bitmask;
+				cell.faceMask &= ~cellFace.bitmask;
+				
+				adjacent.vertexData = null;
+				cell.vertexData = null;
+				
+				faceCount -= 1; //Only remove adjcent's face, since the newly added cell (cell) is not yet included in the count.
 			}
 			else
 			{
-				adjacent[FACE_MASK] |= adjacentFace.bitmask;
+				adjacent.faceMask |= adjacentFace.bitmask;
+				adjacent.vertexData = null;
+				faceCount += 1; //We add a face to adjacent.
 			}
 		}
 		else if (cell != null)
 		{
-			cell[FACE_MASK] |= cellFace.bitmask;
+			cell.faceMask |= cellFace.bitmask;
+			cell.vertexData = null;
+			faceCount += 1;
+		}
+		else
+		{
+			faceCount -= 1; //We have removed cell, and adjacent doesn't exist -> remove the face that was towards adjacent.
 		}
 	}
 	
 	
 	public void refreshMesh()
 	{
-		mesh.setVertices(createVertexArray());
+		if (isDirty)
+		{
+			createVertexArray();
+		}
+		mesh.setVertices(vertexArray);
 	}
 	
 	
