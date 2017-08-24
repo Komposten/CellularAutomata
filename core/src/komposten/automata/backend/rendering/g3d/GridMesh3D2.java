@@ -20,6 +20,55 @@ public class GridMesh3D2 implements Disposable
 		public static final short Normal = 0;
 	}
 	
+
+	public final class Coordinate
+	{
+		public int x;
+		public int y;
+		public int z;
+
+
+		public Coordinate()
+		{
+			this(0, 0, 0);
+		}
+
+
+		public Coordinate(int x, int y, int z)
+		{
+			set(x, y, z);
+		}
+
+
+		public Coordinate set(int x, int y, int z)
+		{
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			return this;
+		}
+		
+		
+		@Override
+		public int hashCode()
+		{
+			return width * (y * depth + z) + x;
+		}
+		
+		
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (obj instanceof Coordinate)
+			{
+				Coordinate other = (Coordinate)obj;
+				return x == other.x && y == other.y && z == other.z;
+			}
+			
+			return false;
+		}
+	}
+	
 	private static final int TYPE = 0;
 	private static final int FACE_MASK = 1;
 	private static final int R = 2;
@@ -27,8 +76,9 @@ public class GridMesh3D2 implements Disposable
 	private static final int B = 4;
 	
 	private Mesh mesh;
-	private Map<Integer, short[]> cells;
+	private Map<Coordinate, short[]> cells;
 	private FloatArray vertexArray; //TODO GridMesh3D2; For even less memory and cpu usage, fill a float[] directly. Set its size based on vertexCount (which is currently always 0, is there a fast, good-looking way to update it?).
+	private Coordinate vector = new Coordinate();
 
 	private int cellCount;
 	private int vertexCount;
@@ -123,14 +173,12 @@ public class GridMesh3D2 implements Disposable
 	{
 		vertexArray.clear();
 		int vertexIndex = 0;
-		for (Entry<Integer, short[]> entry : cells.entrySet())
+		for (Entry<Coordinate, short[]> entry : cells.entrySet())
 		{
-			int index = entry.getKey();
+			Coordinate coords = entry.getKey();
 			short[] data = entry.getValue();
-			int[] coords = getCoordinates(index);
-			//NEXT_TASK GridMesh3D2; Consider using the XYZ as key instead of index. Its faster to convert XYZ->index than vice versa.
 			
-			vertexIndex = VertexFactory.addFaces(data[FACE_MASK], coords[0], coords[1], coords[2], cellSize, data[R], data[G], data[B], vertexArray, vertexIndex);
+			vertexIndex = VertexFactory.addFaces(data[FACE_MASK], coords.x, coords.y, coords.z, cellSize, data[R], data[G], data[B], vertexArray, vertexIndex);
 		}
 		
 		return vertexArray.toArray();
@@ -205,10 +253,10 @@ public class GridMesh3D2 implements Disposable
 	
 	public void addCell(short cellType, Color color, int x, int y, int z)
 	{
-		int index = getIndex(x, y, z);
+		Coordinate coords = new Coordinate(x, y, z);
 		short[] data = createData(cellType, color);
-		cells.put(index, data);
-		updateCellFaces(index, x, y, z);
+		cells.put(coords, data);
+		updateCellFaces(x, y, z);
 	}
 
 
@@ -219,31 +267,17 @@ public class GridMesh3D2 implements Disposable
 	}
 	
 	
-	public boolean hasCell(int index)
-	{
-		return cells.containsKey(index);
-	}
-	
-	
 	public boolean hasCell(int x, int y, int z)
 	{
-		return cells.containsKey(getIndex(x, y, z));
+		return cells.containsKey(vector.set(x, y, z));
 	}
 	
 	
 	public void updateCell(short cellType, Color color, int x, int y, int z)
 	{
-		int index = getIndex(x, y, z);
-		
-		updateCell(cellType, color, index);
-	}
-	
-	
-	public void updateCell(short cellType, Color color, int index)
-	{
-		if (cells.containsKey(index))
+		if (cells.containsKey(vector.set(x, y, z)))
 		{
-			short[] data = cells.get(index);
+			short[] data = cells.get(vector);
 
 			data[TYPE] = cellType;
 			data[R] = (short) (color.r * 255);
@@ -253,60 +287,59 @@ public class GridMesh3D2 implements Disposable
 	}
 	
 	
+	public void updateCell(short cellType, Color color, int index)
+	{
+		int[] coords = getCoordinates(index);
+		updateCell(cellType, color, coords[0], coords[1], coords[2]);
+	}
+	
+	
 	public void removeCell(int index)
 	{
 		int[] coords = getCoordinates(index);
 		
-		removeCell(index, coords[0], coords[1], coords[2]);
+		removeCell(coords[0], coords[1], coords[2]);
 	}
-	
-	
+
+
 	public void removeCell(int x, int y, int z)
 	{
-		int index = getIndex(x, y, z);
-		
-		removeCell(index, x, y, z);
-	}
-
-
-	private void removeCell(int index, int x, int y, int z)
-	{
-		if (cells.remove(index) == null)
+		if (cells.remove(vector.set(x, y, z)) == null)
 		{
 			return;
 		}
 		
-		updateCellFaces(index, x, y, z);
+		updateCellFaces(x, y, z);
 	}
 	
 	
-	private void updateCellFaces(int index, int x, int y, int z)
+	private void updateCellFaces(int x, int y, int z)
 	{
-		short[] cell = cells.get(index);
+		short[] cell = cells.get(vector.set(x, y, z));
 		short[] adjacent = null;
 		
 		//Right neighbour
-		adjacent = (x+1 < width) ? cells.get(getIndex(x+1, y, z)) : null;
+		adjacent = (x+1 < width) ? cells.get(vector.set(x+1, y, z)) : null;
 		updateFaces(cell, Face.Right, adjacent, Face.Left);
 		
 		//Left neighbour
-		adjacent = (x-1 >= 0) ? cells.get(getIndex(x-1, y, z)) : null;
+		adjacent = (x-1 >= 0) ? cells.get(vector.set(x-1, y, z)) : null;
 		updateFaces(cell, Face.Left, adjacent, Face.Right);
 		
 		//Front neighbour
-		adjacent = (z+1 < depth) ? cells.get(getIndex(x, y, z+1)) : null;
+		adjacent = (z+1 < depth) ? cells.get(vector.set(x, y, z+1)) : null;
 		updateFaces(cell, Face.Front, adjacent, Face.Back);
 		
 		//Back neighbour
-		adjacent = (z-1 >= 0) ? cells.get(getIndex(x, y, z-1)) : null;
+		adjacent = (z-1 >= 0) ? cells.get(vector.set(x, y, z-1)) : null;
 		updateFaces(cell, Face.Back, adjacent, Face.Front);
 		
 		//Top neighbour
-		adjacent = (y+1 < height) ? cells.get(getIndex(x, y+1, z)) : null;
+		adjacent = (y+1 < height) ? cells.get(vector.set(x, y+1, z)) : null;
 		updateFaces(cell, Face.Top, adjacent, Face.Bottom);
 		
 		//Bottom neighbour
-		adjacent = (y-1 >= 0) ? cells.get(getIndex(x, y-1, z)) : null;
+		adjacent = (y-1 >= 0) ? cells.get(vector.set(x, y-1, z)) : null;
 		updateFaces(cell, Face.Bottom, adjacent, Face.Top);
 	}
 	
