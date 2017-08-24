@@ -12,6 +12,11 @@ import com.badlogic.gdx.utils.Disposable;
 import komposten.automata.backend.rendering.g3d.VertexFactory.Face;
 
 
+//NEXT_TASK IDEAS:
+//  Add an offset so the mesh can be placed at a different location.
+//  Add an "addAdjacentMesh()"-method that can be used to set neighbours, so updateCellFaces() can know if an outer face (e.g. Face.Left at x == 0) is hidden by another mesh or not.
+
+
 public class GridMesh3D2 implements Disposable
 {
 	public static class CellType
@@ -243,16 +248,21 @@ public class GridMesh3D2 implements Disposable
 		return width * (y * depth + z) + x;
 	}
 	
-	
-	private int[] temp = new int[3];
-	public int[] getCoordinates(int index)
+
+	/**
+	 * Converts an index value to an x, y and z coordinate triplet. <br />
+	 * The {@link Coordinate} object that is returned is reused by this
+	 * {@link GridMesh3D2} instance for other purposes. Do <i>not</i> use it to
+	 * store values, since it <i>will</i> be changed without warning.
+	 */
+	public Coordinate getCoordinates(int index)
 	{
-		temp[1] = index / (width * depth);
-		index -= (temp[1] * width * depth);
-		temp[2] = index / width;
-		temp[0] = index % width;
+		vector.y = index / (width * depth);
+		index -= (vector.y * width * depth);
+		vector.z = index / width;
+		vector.x = index % width;
 		
-		return temp;
+		return vector;
 	}
 	
 	
@@ -302,8 +312,8 @@ public class GridMesh3D2 implements Disposable
 	
 	public void updateCell(short cellType, Color color, int index)
 	{
-		int[] coords = getCoordinates(index);
-		updateCell(cellType, color, coords[0], coords[1], coords[2]);
+		Coordinate coords = getCoordinates(index);
+		updateCell(cellType, color, coords.x, coords.y, coords.z);
 	}
 	
 	
@@ -326,9 +336,9 @@ public class GridMesh3D2 implements Disposable
 	
 	public void removeCell(int index)
 	{
-		int[] coords = getCoordinates(index);
+		Coordinate coords = getCoordinates(index);
 		
-		removeCell(coords[0], coords[1], coords[2]);
+		removeCell(coords.x, coords.y, coords.z);
 	}
 
 
