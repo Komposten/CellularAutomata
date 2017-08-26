@@ -43,6 +43,7 @@ public class Application extends ApplicationAdapter
 	private Renderable meshRenderable;
 	private ModelBatch modelBatch;
 	private Shader shader;
+	private InputReader inputReader;
 	
 	@Override
 	public void create()
@@ -62,6 +63,8 @@ public class Application extends ApplicationAdapter
 		perspectiveCamera.near = 1f;
 		perspectiveCamera.far = 3000f;
 		perspectiveCamera.update();
+		
+		inputReader = new InputReader(perspectiveCamera);
 		
 		ShaderFactory.initialise(orthographicCamera);
 		
@@ -144,7 +147,7 @@ public class Application extends ApplicationAdapter
 //		engine.renderText(font, batch);
 		batch.end();
 		
-		readInput();
+		inputReader.readInput();
 	}
 
 
@@ -231,55 +234,6 @@ public class Application extends ApplicationAdapter
 	}
 	
 	
-	Vector3 dummy = new Vector3();
-	private void readInput()
-	{
-		boolean update = false;
-		if (Gdx.input.isKeyPressed(Input.Keys.W))
-		{
-			dummy.set(perspectiveCamera.direction.x, 0, perspectiveCamera.direction.z);
-			perspectiveCamera.translate(dummy);
-			update = true;
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.S))
-		{
-			dummy.set(-perspectiveCamera.direction.x, 0, -perspectiveCamera.direction.z);
-			perspectiveCamera.translate(dummy);
-			update = true;
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.D))
-		{
-			dummy.set(-perspectiveCamera.direction.z, 0, perspectiveCamera.direction.x);
-			perspectiveCamera.translate(dummy);
-			update = true;
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.A))
-		{
-			dummy.set(perspectiveCamera.direction.z, 0, -perspectiveCamera.direction.x);
-			perspectiveCamera.translate(dummy);
-			update = true;
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.SPACE))
-		{
-			perspectiveCamera.translate(0, 1, 0);
-			update = true;
-		}
-		if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
-		{
-			perspectiveCamera.translate(0, -1, 0);
-			update = true;
-		}
-		
-		if (update)
-		{
-//			perspectiveCamera.lookAt(mesh.getColumnCount()/2*mesh.getCellSize(), mesh.getRowCount()/2*mesh.getCellSize(), mesh.getLayerCount()/2*mesh.getCellSize());
-//			perspectiveCamera.lookAt(mesh2.getWidth()/2*mesh2.getCellSize(), mesh2.getHeight()/2*mesh2.getCellSize(), mesh2.getDepth()/2*mesh2.getCellSize());
-			perspectiveCamera.lookAt(25, 25, 25);
-			perspectiveCamera.update();
-		}
-	}
-	
-	
 	private InputProcessor processor = new InputAdapter()
 	{
 		@Override
@@ -319,34 +273,6 @@ public class Application extends ApplicationAdapter
 		public boolean keyDown(int keycode)
 		{
 			return false;
-		}
-		
-		
-		int oldX = -1;
-		int oldY = -1;
-		Vector3 right = new Vector3();
-		@Override
-		public boolean mouseMoved(int screenX, int screenY)
-		{
-			if (oldX == -1 || oldY == -1)
-			{
-				oldX = screenX;
-				oldY = screenY;
-				return false;
-			}
-			else
-			{
-				int dX = screenX - oldX;
-				int dY = screenY - oldY;
-				oldX = screenX;
-				oldY = screenY;
-				perspectiveCamera.rotate(perspectiveCamera.up, -dX / 5);
-				perspectiveCamera.update();
-				right.set(perspectiveCamera.direction.z, 0, -perspectiveCamera.direction.x);
-//				perspectiveCamera.rotate(right, dY / 5);
-				perspectiveCamera.update();
-				return true;
-			}
 		}
 	};
 }
