@@ -34,6 +34,9 @@ public class CellData
 		g = (short) (color.g * 255);
 		b = (short) (color.b * 255);
 		
-		VertexFactory.updateColors(faceMask, r, g, b, vertexData, 0);
+		if (vertexData != null)
+		{
+			VertexFactory.updateColors(faceMask, r, g, b, vertexData, 0);
+		}
 	}
 }

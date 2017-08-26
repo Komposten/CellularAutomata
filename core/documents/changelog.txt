@@ -1,4 +1,10 @@
 ================
+** 2017-08-26 **
+================
+- Fixed a NullPointerException in CellData.setColor(), that occurred if vertexData had been set to null.
+
+
+================
 ** 2017-08-24 **
 ================
 - GridMesh3D2 now uses Coordinate objects as keys to the cells map instead of Integers (slightly higher .equals()/.hashCode() time), but reduces need of getIndex().
