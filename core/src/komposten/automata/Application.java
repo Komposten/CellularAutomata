@@ -13,8 +13,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.g3d.Shader;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.profiling.GL30Profiler;
-import com.badlogic.gdx.math.Vector3;
 
 import komposten.automata.backend.ShaderFactory;
 import komposten.automata.backend.rendering.g3d.GridMesh3D;
@@ -43,7 +43,6 @@ public class Application extends ApplicationAdapter
 	private Renderable meshRenderable;
 	private ModelBatch modelBatch;
 	private Shader shader;
-	private InputReader inputReader;
 	private CameraInputReader inputReader;
 	
 	@Override
@@ -60,12 +59,11 @@ public class Application extends ApplicationAdapter
 		
 		perspectiveCamera = new PerspectiveCamera(67, width, height);
 		perspectiveCamera.translate(25, 25, 80);
-		perspectiveCamera.lookAt(25, 25, 25);
+		perspectiveCamera.lookAt(25, 0, 25);
 		perspectiveCamera.near = 1f;
 		perspectiveCamera.far = 3000f;
 		perspectiveCamera.update();
 		
-		inputReader = new InputReader(perspectiveCamera);
 		inputReader = new CameraInputReader(perspectiveCamera);
 		
 		ShaderFactory.initialise(orthographicCamera);
@@ -74,21 +72,11 @@ public class Application extends ApplicationAdapter
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		modelBatch = new ModelBatch();
-		pp3d = new PredatorPrey3D(50, 50, 50, modelBatch);
+//		pp3d = new PredatorPrey3D(50, 50, 50, modelBatch);
 		
 //		System.out.println("Creating GridMesh3D...");
-//		mesh2 = new GridMesh3D2(32, 32, 32, 10);
-//		
-//		Material material = new Material("cell_material", ColorAttribute.createDiffuse(Color.PINK));
-//		meshRenderable = new Renderable();
-//		meshRenderable.material = material;
-//		meshRenderable.worldTransform.idt();
-//		meshRenderable.environment = new Environment();
-//		meshRenderable.environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
-//		meshRenderable.environment.add(new DirectionalLight().set(Color.WHITE, new Vector3(0, -.2f, -1)));
-//		meshRenderable.meshPart.set("cells", mesh2.getMesh(), 0, mesh2.getMesh().getNumVertices(), GL30.GL_TRIANGLES);
-//		shader = new DefaultShader(meshRenderable);
-//		shader.init();
+//		mesh = new GridMesh3D(32, 32, 32, 1);
+		mesh2 = new GridMesh3D2(32, 32, 32, 1, true);
 		
 		Gdx.input.setInputProcessor(processor);
 	}
@@ -112,27 +100,36 @@ public class Application extends ApplicationAdapter
 		
 //		engine.update();
 //		engine.render();
+		
+//		if (counter % 2 == 0)
+//		{
+//			mesh.updateCell(Color.WHITE, false, 0);
+//			mesh2.removeCell(0, 0, 0);
+//		}
+//		else
+//		{
+//			mesh.updateCell(Color.WHITE, true, 0);
+//			mesh2.addCell((short)0, Color.WHITE, 0, 0, 0);
+//		}
+//		
+//		mesh.refreshMesh();
+//		mesh2.refreshMesh();
 
 		Gdx.gl.glEnable(GL30.GL_CULL_FACE);
 		Gdx.gl.glEnable(GL30.GL_DEPTH_TEST);
-//		ShaderProgram shader = ShaderFactory.getShader(ShaderFactory.DEFAULT_COLOR);
-//		shader.begin();
-//		shader.setUniformMatrix("u_projTrans", perspectiveCamera.combined);
-////		mesh.getMesh().render(shader, GL30.GL_TRIANGLES);
+		ShaderProgram shader = ShaderFactory.getShader(ShaderFactory.DEFAULT_COLOR);
+		shader.begin();
+		shader.setUniformMatrix("u_projTrans", perspectiveCamera.combined);
+//		mesh.getMesh().render(shader, GL30.GL_TRIANGLES);
 //		mesh2.getMesh().render(shader, GL30.GL_TRIANGLES);
-//		shader.end();
-		if (counter % 2 == 0)
-			pp3d.update();
+		shader.end();
+//		if (counter % 2 == 0)
+//			pp3d.update();
 		counter++;
-		modelBatch.begin(perspectiveCamera);
-		pp3d.render();
-//		modelBatch.render(meshRenderable);
-		modelBatch.end();
-//		context.begin();
-//		shader.begin(perspectiveCamera, context);
-//		shader.render(meshRenderable);
-//		shader.end();
-//		context.end();
+//		modelBatch.begin(perspectiveCamera);
+//		pp3d.render();
+////		modelBatch.render(meshRenderable);
+//		modelBatch.end();
 		Gdx.gl.glDisable(GL30.GL_CULL_FACE);
 		Gdx.gl.glDisable(GL30.GL_DEPTH_TEST);
 		
@@ -141,7 +138,7 @@ public class Application extends ApplicationAdapter
 		int x = 10;
 		int y = Gdx.graphics.getHeight() - 10;
 //		font.draw(batch, "Automata: " + engine.getCurrentAutomata().getName(), x, y);
-		pp3d.renderText(font, batch);
+//		pp3d.renderText(font, batch);
 		if (debug)
 		{
 			drawDebug(x, y - 30);
