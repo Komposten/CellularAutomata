@@ -294,7 +294,7 @@ public class GridMesh3D implements Disposable
 	
 	public void refreshMesh()
 	{
-//		createVertexArray();
+		createVertexArray();
 //		updateFloatArray();
 		vertexArray = floatArray.toArray();
 		mesh.updateVertices(0, vertexArray);
