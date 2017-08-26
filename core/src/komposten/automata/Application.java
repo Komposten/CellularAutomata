@@ -44,6 +44,7 @@ public class Application extends ApplicationAdapter
 	private ModelBatch modelBatch;
 	private Shader shader;
 	private InputReader inputReader;
+	private CameraInputReader inputReader;
 	
 	@Override
 	public void create()
@@ -65,6 +66,7 @@ public class Application extends ApplicationAdapter
 		perspectiveCamera.update();
 		
 		inputReader = new InputReader(perspectiveCamera);
+		inputReader = new CameraInputReader(perspectiveCamera);
 		
 		ShaderFactory.initialise(orthographicCamera);
 		

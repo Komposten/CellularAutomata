@@ -2,7 +2,7 @@
 ** 2017-08-26 **
 ================
 - Fixed a NullPointerException in CellData.setColor(), that occurred if vertexData had been set to null.
-- Added InputReader.
+- Added CameraInputReader, and fixed the mouse input code.
 
 
 ================
